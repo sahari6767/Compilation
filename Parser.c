@@ -192,6 +192,7 @@ void Parse_Simple_Type(){
 		break;
 	}
 }
+////////////////////////////////// ok /////////////////////////////////////
 
 void Parse_Type_Declaration(){
 	eTOKENS Firsts[3] = {  TOKEN_TYPE, TOKEN_TYPE_NAME, TOKEN_IS };
@@ -311,7 +312,7 @@ void Parse_Id_List_New(){
 }
 void Parse_Structure_Type(){
 	eTOKENS Firsts[1] = { TOKEN_STRUCT };
-	eTOKENS Follows[1] = { TOKEN_LEFT_CURLY_BRACES };
+	eTOKENS Follows[1] = { TOKEN_RIGHT_CURLY_BRACES };
 	int FirstsSize = 1;
 	int FollowsSize = 1;
 	nt = next_token();
@@ -327,38 +328,58 @@ void Parse_Structure_Type(){
 		break;
 	}
 }
-//////////////////////////////////  We Stped Here!! //////////
+////////////////  We Stped Here(27.12.19) ////////////////
 void Parse_Fields(){
-	eTOKENS Firsts[1] = { TOKEN_STRUCT };
-	eTOKENS Follows[1] = { ???? };////
+	eTOKENS Firsts[2] = { TOKEN_INTEGER,TOKEN_REAL };
+	eTOKENS Follows[2] = { TOKEN_SEMICOLON,TOKEN_RIGHT_BRACKETS };////
 	int FirstsSize = 1;
-	int FollowsSize = 1;
+	int FollowsSize = 2;
 	nt = next_token();
 
 	switch(nt->kind){
-	case TOKEN_STRUCT:
-		fprintf(yyout, "STRUCTUERE_TYPE -> struct { FIELDS }\n");
+	case TOKEN_INTEGER:
+		fprintf(yyout, "FIELDS -> FIELDS; FIELD | FIELD\n");
 		nt = back_token();
-		Parse_Fields();
+		Parse_Fields_new();
+		Parse_Field();
 		break;
+	case TOKEN_REAL:
+		fprintf(yyout, "FIELDS -> FIELDS; FIELD | FIELD\n");
+		nt = back_token();
+		Parse_Fields_new();
+		Parse_Field();
+		break;
+
 	default: 
-		Error_Handle(Firsts, Follows, FirstsSize, FollowsSize, 1);
+		Error_Handle(Firsts, Follows, FirstsSize, FollowsSize, 2 );
 		break;
 	}
 }
 
 void Parse_Fields_new(){
-	eTOKENS Firsts[1] = { ???? };
-	eTOKENS Follows[1] = { ???? };////
+	eTOKENS Firsts[1] = { TOKEN_SEMICOLON };
+	eTOKENS Follows[2] = { TOKEN_SEMICOLON,TOKEN_RIGHT_CURLY_BRACES };////
 	int FirstsSize = 1;
 	int FollowsSize = 1;
 	nt = next_token();
 
 	switch(nt->kind){
-	case TOKEN_STRUCT:
-		fprintf(yyout, "STRUCTUERE_TYPE -> struct { FIELDS }\n");
+	nt = next_token();
+		if(nt->kind == TOKEN_INTEGER || nt->kind == TOKEN_REAL)
+		{
+			fprintf(yyout, "FIELDS -> FIELDS; FIELD | FIELD\n");
+			nt = back_token();
+			Parse_Fields();
+		}
+		else
+		{
+			fprintf(yyout, "Fields_new -> epsilon\n");
+			nt = back_token();
+			nt = back_token();
+		}
+		break;
+	case TOKEN_RIGHT_CURLY_BRACES:
 		nt = back_token();
-		Parse_Fields();
 		break;
 	default: 
 		Error_Handle(Firsts, Follows, FirstsSize, FollowsSize, 1);
@@ -367,26 +388,33 @@ void Parse_Fields_new(){
 }
 
 void Parse_Field(){
-	eTOKENS Firsts[1] = { ???? };
-	eTOKENS Follows[1] = { ???? };////
-	int FirstsSize = 1;
+	eTOKENS Firsts[2] = { TOKEN_INTEGER,TOKEN_REAL };
+	eTOKENS Follows[1] = { TOKEN_SEMICOLON };////
+	int FirstsSize = 2;
 	int FollowsSize = 1;
 	nt = next_token();
 
-	switch(nt->kind){
-	case TOKEN_STRUCT:
-		fprintf(yyout, "FIELD -> VAR_DECLARATION\n");
+	switch(nt->kind)
+	{
+	case TOKEN_INTEGER:
+		fprintf(yyout, "FIELD -> VAR_ DECLARATION\n");
+		nt = back_token();
+		Parse_Var_Declaration();
+		break;
+	case TOKEN_REAL:
+		fprintf(yyout, "FIELD -> VAR_ DECLARATION\n");
 		nt = back_token();
 		Parse_Var_Declaration();
 		break;
 	default: 
-		Error_Handle(Firsts, Follows, FirstsSize, FollowsSize, 1);
+		Error_Handle(Firsts, Follows, FirstsSize, FollowsSize, 0 );
 		break;
 	}
 }
+////////////////  We Stped Here(28.12.19) ////////////////
 
 
-////////////////////////////////// ok /////////////////////////////////////
+
 
 void Parse_Variables_List()
 {
