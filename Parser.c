@@ -288,7 +288,7 @@ void Parse_Id_List_New(){
 		nt = back_token()
 		match(TOKEN_RIGHT_CURLY_BRACES);
 		break;
-	case TOKEN_COLON:
+	case TOKEN_COLON://Need to put colon(match)
 		fprintf(yyout, "id -> epsilon\n");
 		nt = back_token();
 		break;
@@ -414,7 +414,7 @@ void Parse_Field(){
 
 void Parse_Statements()
 {
-	eTOKENS Firsts[3] = { TOKEN_ID, TOKEN_SWITCH, TOKEN_BREAK, TOKEN_BLOCK };
+	eTOKENS Firsts[4] = { TOKEN_ID, TOKEN_SWITCH, TOKEN_BREAK, TOKEN_BLOCK };
 	eTOKENS Follows[2] = { TOKEN_RIGHT_CURLY_BRACES, TOKEN_KEYWORD_END };
 	////////////////  We Stped Here(28.12.19) ////////////////
 	int FirstsSize = 3;
@@ -423,25 +423,28 @@ void Parse_Statements()
 
 	switch(nt->kind)
 	{
-	case TOK_ID:
+	case TOKEN_ID:
 		fprintf(yyout, "STATEMENTS -> STATEMENT ; STATEMENTS_NEW\n");
 		nt = back_token();
 		Parse_Statement();
-		match(TOK_SEP_SEMICOLON);
 		Parse_Statements_New();
 		break;
-	case TOK_SEP_L_CURBRCKT:
+	case TOKEN_SWITCH:
 		fprintf(yyout, "STATEMENTS -> STATEMENT ; STATEMENTS_NEW\n");
 		nt = back_token();
 		Parse_Statement();
-		match(TOK_SEP_SEMICOLON);
 		Parse_Statements_New();
 		break;
-	case TOK_KW_RETURN:
+	case TOKEN_BREAK:
 		fprintf(yyout, "STATEMENTS -> STATEMENT ; STATEMENTS_NEW\n");
 		nt = back_token();
 		Parse_Statement();
-		match(TOK_SEP_SEMICOLON);
+		Parse_Statements_New();
+		break;
+	case TOKEN_BLOCK:
+		fprintf(yyout, "STATEMENTS -> STATEMENT ; STATEMENTS_NEW\n");
+		nt = back_token();
+		Parse_Statement();
 		Parse_Statements_New();
 		break;
 	default: 
