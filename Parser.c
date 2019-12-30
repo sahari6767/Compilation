@@ -499,5 +499,6 @@ int Is_Token_In_Follows(Token* token, eTOKENS* Follows, int size) {
 			break;
 		}
 	}
+	
 	return Token_In_Follows;
 }
