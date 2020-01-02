@@ -38,13 +38,14 @@ typedef enum Grammer
 
 void match(eTOKENS i_ExpectedTokenKind);
 void recoveryFromError(Grammer i_Variable);
+void mainParser();
 
-void parse_PROGRAM();
-void parse_BLOCK();
-void parse_DECLARATIONS();
-void parse_DECLARATIONS_NEW();
-void parse_DECLARATION();
-void parse_VAR_DECLARATION();
+void parse_PROGRAM();//CHECK
+void parse_BLOCK();//CHECK
+void parse_DECLARATIONS();//CHECK
+void parse_DECLARATIONS_NEW();//CHECK
+void parse_DECLARATION();//CHECK
+void parse_VAR_DECLARATION();//CHECK
 void parse_VAR_DECLARATION_NEW();
 void parse_SIZE();
 void parse_SIMPLE_TYPE();

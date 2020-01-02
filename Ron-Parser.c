@@ -83,7 +83,7 @@ void parse_VAR_DEFINITIONS_TAG()
 		{
 			fprintf(yyoutSyn, "Rule (VAR_DEFINITIONS_TAG -> epsilon)\n");
 			back_token();
-			break;
+			break; 
 		}
 
 		default:

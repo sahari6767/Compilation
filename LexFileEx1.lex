@@ -79,7 +79,10 @@ fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n",
 "=" {create_and_store_token(TOKEN_ASSIGNMENT, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_ASSIGNMENT",line ,yytext);}
 
-"," {create_and_store_token(TOKEN_COLON, yytext, line);
+"," {create_and_store_token(TOKEN_COMMA, yytext, line);
+fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_COMMA",line ,yytext);}
+
+":" {create_and_store_token(TOKEN_COLON, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_COLON",line ,yytext);}
 
 ";" {create_and_store_token(TOKEN_SEMICOLON, yytext, line);
