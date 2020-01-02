@@ -46,7 +46,7 @@ void parse_DECLARATIONS();//CHECK
 void parse_DECLARATIONS_NEW();//CHECK
 void parse_DECLARATION();//CHECK
 void parse_VAR_DECLARATION();//CHECK
-void parse_VAR_DECLARATION_NEW();
+void parse_VAR_DECLARATION_NEW();//CHECK
 void parse_SIZE();
 void parse_SIMPLE_TYPE();
 void parse_TYPE_DECLARATION();

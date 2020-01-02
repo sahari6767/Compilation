@@ -124,7 +124,7 @@ void parse_DECLARATION()
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_REAL, TOKEN_INTEGER, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(PARAM_DEFINITIONS);
+			recoveryFromError(DECLARATION);
 		}
 	}
 
@@ -149,3 +149,48 @@ void parse_VAR_DECLARATION()
 		}
 	}
 }
+
+void parse_VAR_DECLARATION_NEW()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_INTEGER:
+		{
+			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); // Is SIMPLE_TYPE Neccecery?
+			parse_SIMPLE_TYPE();
+			break;
+		}
+	
+		case TOKEN_REAL:
+		{
+			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); // Is SIMPLE_TYPE Neccecery?
+			parse_SIMPLE_TYPE();
+			break;
+		}
+	
+		case TOKEN_ARRAY:
+		{
+			fprintf(yyoutSyn, "VAR_DECLARATION_NEW -> array [SIZE] of SIMPLE_TYPE)\n"); 
+			match(TOKEN_LEFT_BRACKETS);
+			parse_SIZE();
+			match(TOKEN_RIGHT_BRACKETS);
+			match(TOKEN_OF);
+			parse_SIMPLE_TYPE();
+			break;
+		}
+	
+		case TOKEN_TYPE_NAME:
+		{
+			fprintf(yyoutSyn, "VAR_DECLARATION_NEW -> type_name)\n"); 
+		}
+		
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER,TOKEN_REAL,TOKEN_ARRAY,TOKEN_TYPE_NAME] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(VAR_DECLARATION_NEW);
+		}
+	}
+}
+
+
