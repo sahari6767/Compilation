@@ -157,15 +157,17 @@ void parse_VAR_DECLARATION_NEW()
 	{
 		case TOKEN_INTEGER:
 		{
-			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); // Is SIMPLE_TYPE Neccecery?
-			parse_SIMPLE_TYPE();
+			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
+			back_token();//??
+			parse_SIMPLE_TYPE();// Is SIMPLE_TYPE Neccecery?
 			break;
 		}
 	
 		case TOKEN_REAL:
 		{
-			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); // Is SIMPLE_TYPE Neccecery?
-			parse_SIMPLE_TYPE();
+			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
+			back_token();//??
+			parse_SIMPLE_TYPE();// Is SIMPLE_TYPE Neccecery?
 			break;
 		}
 	
@@ -193,4 +195,147 @@ void parse_VAR_DECLARATION_NEW()
 	}
 }
 
+void parse_SIZE()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_INT_NUMBER:
+		{
+			fprintf(yyoutSyn, "SIZE -> int_num)\n");
+			break;
+		}
 
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SIZE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(SIZE);
+
+		} 		
+	}
+}
+
+void parse_SIMPLE_TYPE()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_INTEGER:
+		{
+			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> integer\n");
+			break;
+		}
+		case TOKEN_REAL:
+		{
+			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> real\n"); 
+			break;
+		}
+		default:
+		{
+		fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER,TOKEN_REAL] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+		recoveryFromError(SIMPLE_TYPE);
+		}
+	}
+}
+
+void parse_TYPE_DECLARATION()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_TYPE:
+		{
+			fprintf(yyoutSyn, "Rule (TYPE_DECLARATION -> type type_name is TYPE_INDICATOR\n");
+			match(TOKEN_TYPE);
+			match(TOKEN_TYPE_NAME);
+			match(TOKEN_IS);
+			parse_TYPE_INDICATOR();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(TYPE_DECLARATION);
+		}
+	}
+
+}
+
+void parse_TYPE_INDICATOR()
+{
+	fprintf(yyoutSyn, "Rule (TYPE_INDICATOR -> ENUM_TYPE STRUCTURE_TYPE\n");
+	parse_ENUM_TYPE();
+	parse_STRUCTURE_TYPE();
+}
+
+
+void parse_ENUM_TYPE()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_ENUM:
+		{
+			fprintf(yyoutSyn, "Rule (ENUM_TYPE -> enum { ID_LIST }\n");
+			match(TOKEN_LEFT_CURLY_BRACKETS);
+			parse_ID_LIST();
+			match(TOKEN_RIGHT_CURLY_BRACKETS);
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ENUM] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(ENUM_TYPE);
+
+		}
+	}
+}
+
+
+void parse_ID_LIST()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (ID_LIST -> id ID_LIST_NEW\n");
+			parse_ID_LIST_NEW();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(ID_LIST);
+		}
+	}
+}
+
+void parse_ID_LIST_NEW()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_COMMA:
+		{
+			fprintf(yyoutSyn, "ID_LIST_NEW -> , ID_LIST_NEW\n");
+			parse_ID_LIST_NEW();
+			break;
+		}
+
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "ID_LIST_NEW -> epsilon\n");
+			back_token();
+			break;			
+		}
+		
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_COMMA,TOKEN_SEMICOLON] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(ID_LIST_NEW);
+		}
+	}
+}
