@@ -88,8 +88,8 @@ fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n",
 ";" {create_and_store_token(TOKEN_SEMICOLON, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_SEMICOLON",line ,yytext);}
 
-"{" {create_and_store_token(TOKEN_LEFT_CURLY_BRACES, yytext, line);
-fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_LEFT_CURLY_BRACES",line ,yytext);}
+"{" {create_and_store_token(TOKEN_LEFT_CURLY_BRACKETS, yytext, line);
+fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_LEFT_CURLY_BRACKETS",line ,yytext);}
 
 "[" {create_and_store_token(TOKEN_LEFT_BRACKETS, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_LEFT_BRACKETS",line ,yytext);}
@@ -97,8 +97,8 @@ fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n",
 "(" {create_and_store_token(TOKEN_LEFT_PARENTHESES, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_LEFT_PARENTHESES",line ,yytext);}
 
-"}" {create_and_store_token(TOKEN_RIGHT_CURLY_BRACES, yytext, line);
-fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_RIGHT_CURLY_BRACES",line ,yytext);}
+"}" {create_and_store_token(TOKEN_RIGHT_CURLY_BRACKETS, yytext, line);
+fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_RIGHT_CURLY_BRACKETS",line ,yytext);}
 
 "]" {create_and_store_token(TOKEN_RIGHT_BRACKETS, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_RIGHT_BRACKETS",line ,yytext);}
