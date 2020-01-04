@@ -339,3 +339,87 @@ void parse_ID_LIST_NEW()
 		}
 	}
 }
+
+
+void parse_STRUCTURE_TYPE()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_STRUCT:
+		{
+			fprintf(yyoutSyn, "STRUCTURE_TYPE -> struct { FIELDS }\n");
+			match(TOKEN_LEFT_CURLY_BRACKETS);
+			parse_FIELDS();
+			match(TOKEN_RIGHT_CURLY_BRACKETS);
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_STRUCT] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(STRUCTURE_TYPE);
+		}
+	}
+}
+
+
+void parse_FIELDS()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (FIELDS -> FIELDS_NEW ; FIELD)\n");
+			back_token();
+			parse_FIELD();
+			break;
+		}
+
+		case TOKEN_RIGHT_CURLY_BRACKETS:
+		{
+			fprintf(yyoutSyn, "Rule (FIELDS -> epsilon\n");
+			back_token();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(FIELDS);
+		}
+	}
+}
+
+void parse_FIELDS_NEW()
+{
+	currentToken = next_token();	
+	Token* secondToken = peek();
+		if (secondToken->kind == TOKEN_ID)
+		{
+			switch (currentToken->kind)
+			case TOKEN_SEMICOLON:
+				{
+					fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; FIELD FIELDS_NEW\n");
+					parse_FIELD();
+					parse_FIELDS_NEW();
+					break;	
+				}
+			default:
+				{
+					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+					recoveryFromError(VAR_DEFINITIONS_TAG);
+
+				}
+
+			else
+			{
+				back_token();
+				fprintf(yyoutSyn, "Rule (FIELDS_NEW ->  epsilon)\n");
+		
+			}
+
+
+		
+

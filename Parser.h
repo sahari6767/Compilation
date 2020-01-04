@@ -54,8 +54,8 @@ void parse_TYPE_INDICATOR();//CHECK
 void parse_ENUM_TYPE();//CHECK
 void parse_ID_LIST();//CHECK
 void parse_ID_LIST_NEW();//CHECK
-void parse_STRUCTURE_TYPE();
-void parse_FIELDS();
+void parse_STRUCTURE_TYPE();//CHECK
+void parse_FIELDS();//CHECK
 void parse_FIELDS_NEW();
 void parse_FIELD();
 void parse_STATEMENTS();
