@@ -339,3 +339,51 @@ void parse_ID_LIST_NEW()
 		}
 	}
 }
+
+void parse_STRUCTURE_TYPE()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_STRUCT:
+		{
+			fprintf(yyoutSyn, "Rule (STRUCTURE_TYPE -> struct { FIELDS }\n");
+			match(TOKEN_STRUCT);
+			match(TOKEN_LEFT_CURLY_BRACKETS);
+			parse_FIELDS();
+			match(TOKEN_RIGHT_CURLY_BRACKETS);
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_STRUCT] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(STRUCTURE_TYPET);
+		}
+	}
+}
+
+void parse_FIELDS(){
+
+}
+
+void parse_FIELDS_NEW(){}
+void parse_FIELD(){}
+void parse_STATEMENTS(){}
+void parse_STATEMENT(){}
+void parse_VAR_ELEMENT(){}
+void parse_VAR_ELEMENT_NEW(){}
+void parse_FIELD_ACCESS(){}
+void parse_EXPRESSION(){
+
+	
+}
+void parse_EXPRASSION_NEW(){}
+void parse_SIMPLE_EXPRASSION(){}
+void parse_KEY(){}
+void parse_CASE_LIST(){}
+void parse_CASE_LIST_NEW(){}
+void parse_CASE(){}
+void parse_KEY_VALUE(){}
+
+
+
