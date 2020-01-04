@@ -582,14 +582,191 @@ void parse_VAR_ELEMENT_NEW()
 
 
 //-----------avichai handling--------------------
-void parse_EXPRESSION(){}
-void parse_EXPRASSION_NEW(){}
-void parse_SIMPLE_EXPRASSION(){}
-void parse_KEY(){}
-void parse_CASE_LIST(){}
-void parse_CASE_LIST_NEW(){}
-void parse_CASE(){}
-void parse_KEY_VALUE(){}
+
+///  ask saar
+void parse_EXPRESSION(){
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_REAL:
+		case TOKEN_INTEGER:
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRESSION -> SIMPLE_EXPRASSION EXPRASSION_NEW)\n");
+			back_token();
+			parse_SIMPLE_EXPRASSION();
+			parse_EXPRASSION_NEW();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER, TOKEN_REAL, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(EXPRESSION);
+		}
+	}
+}
+
+void parse_EXPRASSION_NEW(){
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_AR_OP_ADD:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_ADD EXPRESSION)\n");
+			back_token();
+			parse_EXPRESSION();
+			break;
+		}
+		case TOKEN_AR_OP_SUB:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_SUB EXPRESSION)\n");
+			back_token();
+			parse_EXPRESSION();
+			break;
+		}
+		case TOKEN_AR_OP_MULTI:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_MULTI EXPRESSION)\n");
+			back_token();
+			parse_EXPRESSION();
+			break;
+		}
+		case TOKEN_AR_OP_DIVIDE:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_DIVIDE EXPRESSION)\n");
+			back_token();
+			parse_EXPRESSION();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_AR_OP_ADD, TOKEN_AR_OP_SUBL, TOKEN_AR_OP_MULTI, TOKEN_AR_OP_DIVIDE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(EXPRASSION_NEW);
+		}
+	}
+}
+
+
+void parse_SIMPLE_EXPRASSION(){
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_REAL:
+		case TOKEN_INTEGER:
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> int_num | real_num | VAR_ELEMENT)\n");
+			back_token();
+			parse_VAR_ELEMENT();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER, TOKEN_REAL, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(SIMPLE_EXPRASSION);
+		}
+	}
+}
+void parse_KEY()
+{
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (KEY -> VAR_ELEMENT)\n");
+			back_token();
+			parse_VAR_ELEMENT();
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(KEY);
+		}
+	}
+}
+void parse_CASE_LIST(){
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_CASE:
+		{
+			fprintf(yyoutSyn, "Rule (CASE_LIST -> CASE CASE_LIST_NEW)\n");
+			back_token();
+			parse_CASE();
+			parse_CASE_LIST_NEW();
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(CASE_LIST);
+		}
+	}
+}
+void parse_CASE_LIST_NEW(){
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_CASE:
+		{
+			fprintf(yyoutSyn, "Rule (CASE_LIST_NEW -> CASE CASE_LIST_NEW)\n");
+			back_token();
+			parse_CASE();
+			parse_CASE_LIST_NEW();
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(CASE_LIST_NEW);
+		}
+	}
+}
+void parse_CASE()
+{
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_CASE:
+		{
+			fprintf(yyoutSyn, "Rule (CASE -> case KEY_VALUE : { STATEMENTS })\n");
+			match(TOKEN_CASE);
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(CASE);
+		}
+	}
+}
+void parse_KEY_VALUE(){
+	currentToken = next_token();
+	switch(currentToken->kind)
+	{
+		case TOKEN_INTEGER:
+		{
+			fprintf(yyoutSyn, "Rule (KEY_VALUE -> int_num)\n");
+			break;
+		}
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (KEY_VALUE -> id)\n");
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID, TOKEN_INTEGER] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(KEY_VALUE);
+		}	
+	}
+}
 
 
 
