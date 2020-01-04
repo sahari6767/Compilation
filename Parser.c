@@ -397,6 +397,7 @@ void parse_FIELDS_NEW()
 		if (secondToken->kind == TOKEN_ID)
 		{
 			switch (currentToken->kind)
+			{
 			case TOKEN_SEMICOLON:
 				{
 					fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; FIELD FIELDS_NEW\n");
@@ -408,25 +409,176 @@ void parse_FIELDS_NEW()
 				{
 					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 					recoveryFromError(VAR_DEFINITIONS_TAG);
-
 				}
-
-			else
+			}
+		}
+		else
 			{
 				back_token();
 				fprintf(yyoutSyn, "Rule (FIELDS_NEW ->  epsilon)\n");
-
 			}
-		}
 }
 
 
-void parse_FIELD(){}
-void parse_STATEMENTS(){}
-void parse_STATEMENT(){}
-void parse_VAR_ELEMENT(){}
-void parse_VAR_ELEMENT_NEW(){}
-void parse_FIELD_ACCESS(){}
+void parse_FIELD()
+{
+	fprintf(yyoutSyn, "Rule (FIELD -> VAR_DECLARATION\n");
+	parse_VAR_DECLARATION();
+}
+
+
+
+
+void parse_STATEMENTS()
+{
+	fprintf(yyoutSyn, "Rule (STATEMENTS -> STATEMENT STATEMANTS_NEW)\n");
+	parse_STATEMENT();
+	parse_STATEMENT_NEW();
+}
+
+
+void parse_STATEMENT()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_BLOCK:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMENT -> BLOCK)\n");
+			parse_BLOCK();
+			break;
+		}
+		case TOKEN_BREAK:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMENT -> break)\n");
+			match(TOKEN_BREAK);
+			break;
+		}
+		case TOKEN_SWITCH:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMENT -> switch)\n");
+			match(TOKEN_LEFT_PARENTHESES);
+			parse_KEY();
+			match(TOKEN_RIGHT_PARENTHESES);
+			match(TOKEN_LEFT_CURLY_BRACKETS);
+			parse_CASE_LIST();
+			match(TOKEN_SEMICOLON);
+			match(TOKEN_DEFAULT);
+			match(TOKEN_COLON);
+			parse_STATEMENTS();
+			match(TOKEN_RIGHT_CURLY_BRACKETS);
+			break;
+		}
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMENT -> VAR_ELEMENT = EXPRESSION)\n");
+			back_token();
+			parse_VAR_ELEMENT();
+			match(TOKEN_ASSIGNMENT);
+			parse_EXPRESSION();
+			break;			
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_BLOCK,TOKEN_SWITCH,TOKEN_BREAK,TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(STATEMENT);
+		}
+	}
+
+}
+
+
+
+void parse_STATEMENT_NEW()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW ->; STATEMENT STATEMANTS_NEW)\n");
+			parse_STATEMENT();
+			parse_STATEMENT_NEW();
+			break;
+		}
+
+		case TOKEN_END:
+		case TOKEN_RIGHT_CURLY_BRACKETS:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
+			back_token();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_END,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(STATEMANTS_NEW);
+		}
+	}
+
+}
+
+
+void parse_VAR_ELEMENT()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+
+		case TOKEN_ID:
+		{
+			Token* secondToken = peek();
+			if (secondToken->kind == TOKEN_LEFT_BRACKETS)
+			{
+				fprintf(yyoutSyn, "VAR_ELEMENT  -> id[EXPRESSION])\n");
+				back_token();
+				match(TOKEN_LEFT_BRACKETS);
+				parse_EXPRESSION();
+				match(TOKEN_RIGHT_BRACKETS);	
+			}
+			else
+			{
+				fprintf(yyoutSyn, "VAR_ELEMENT  -> id VAR_ELEMENT_NEW)\n");
+				parse_VAR_ELEMENT_NEW();
+			}
+			break;
+		}
+
+		case TOKEN_ASSIGNMENT:
+		case TOKEN_RIGHT_BRACKETS:
+		{
+			fprintf(yyoutSyn, "VAR_ELEMENT  -> FIELD_ACCESS)\n");
+			fprintf(yyoutSyn, "FIELD_ACCESS -> epsilon)\n");
+			back_token();
+			parse_FIELD_ACCESS();
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(VAR_DEFINITIONS_TAG);
+		}
+	}	
+}
+
+void parse_VAR_ELEMENT_NEW()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_
+	}
+
+}
+
+
+
+
+
+
+
 
 
 //-----------avichai handling--------------------
