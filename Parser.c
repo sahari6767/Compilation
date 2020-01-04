@@ -546,8 +546,8 @@ void parse_VAR_ELEMENT()
 			break;
 		}
 
-		case TOKEN_ASSIGNMENT:
-		case TOKEN_RIGHT_BRACKETS:
+		case TOKEN_ASSIGNMENT:// not sure
+		case TOKEN_RIGHT_BRACKETS:// not sure
 		{
 			fprintf(yyoutSyn, "VAR_ELEMENT  -> FIELD_ACCESS)\n");
 			fprintf(yyoutSyn, "FIELD_ACCESS -> epsilon)\n");
@@ -558,7 +558,7 @@ void parse_VAR_ELEMENT()
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(VAR_DEFINITIONS_TAG);
+			recoveryFromError(VAR_ELEMENT);
 		}
 	}	
 }
@@ -568,18 +568,26 @@ void parse_VAR_ELEMENT_NEW()
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
-		case TOKEN_
+		case TOKEN_DOT:
+		{
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> FIELD_ACCESS)\n");
+			back_token();
+			parse_FIELD_ACCESS();
+		}
+		case TOKEN_LEFT_BRACKETS: //not sure
+		{
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> [EXPRESSION] FIELD_ACCESS)\n");
+			parse_EXPRESSION();
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_DOT, LEFT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(VAR_ELEMENT_NEW);
+		}
+	
 	}
 
 }
-
-
-
-
-
-
-
-
 
 //-----------avichai handling--------------------
 
