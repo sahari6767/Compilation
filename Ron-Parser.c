@@ -17,7 +17,7 @@ void match(eTOKENS i_ExpectedTokenKind)
 		back_token();
 	}
 }
-
+//
 void mainParser()
 {
 	fprintf(yyoutSyn, "Parser starting\n");

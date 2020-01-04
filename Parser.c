@@ -1,4 +1,4 @@
-#include "Token.h"
+#include "Tokens.h"
 #include "Parser.h"
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -42,7 +42,7 @@ void parse_BLOCK()
 			parse_DECLARATIONS();
 			match(TOKEN_BEGIN);
 			parse_STATEMENTS();
-			match(TOKEN_END);
+			match(TOKEN_KEYWORD_END);
 			break;
 		}
 		
@@ -52,7 +52,6 @@ void parse_BLOCK()
 			recoveryFromError(BLOCK);
 		}
 	}
-
 }
 
 void parse_DECLARATIONS()
@@ -200,7 +199,7 @@ void parse_SIZE()
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
-		case TOKEN_INT_NUMBER:
+		case TOKEN_INTEGER:
 		{
 			fprintf(yyoutSyn, "SIZE -> int_num)\n");
 			break;
@@ -408,7 +407,7 @@ void parse_FIELDS_NEW()
 			default:
 				{
 					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-					recoveryFromError(VAR_DEFINITIONS_TAG);
+					recoveryFromError(FIELDS_NEW);
 				}
 			}
 		}
@@ -503,7 +502,7 @@ void parse_STATEMENT_NEW()
 			break;
 		}
 
-		case TOKEN_END:
+		case TOKEN_KEYWORD_END:
 		case TOKEN_RIGHT_CURLY_BRACKETS:
 		{
 			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
@@ -513,7 +512,7 @@ void parse_STATEMENT_NEW()
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_END,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_KEYWORD_END,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(STATEMANTS_NEW);
 		}
 	}
@@ -586,8 +585,39 @@ void parse_VAR_ELEMENT_NEW()
 		}
 	
 	}
+}
+
+void parse_FIELD_ACCESS()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_DOT:
+		{
+			fprintf(yyoutSyn, "(FIELD_ACCESS  -> .idFIELD_ACCESS)\n");
+			match(TOKEN_ID);
+			parse_FIELD_ACCESS();
+			break;
+		}
+
+		case TOKEN_ASSIGNMENT:
+		case TOKEN_RIGHT_BRACKETS:
+		{
+			fprintf(yyoutSyn, "(FIELD_ACCESS  -> epsilon)\n");
+			back_token();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_DOT,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(FIELD_ACCESS);
+
+		}
+	}
 
 }
+
 
 //-----------avichai handling--------------------
 
@@ -776,5 +806,102 @@ void parse_KEY_VALUE(){
 	}
 }
 
+int isFollowOfVariable(Grammer variable, eTOKENS kind)
+{
+	switch (variable)
+	{
+		case PROGRAM:
+		{
+			switch(kind)
+			{
+				case TOKEN_EOF: returun 1;
+				default: return 0;
+			}
+		}	
+
+		case BLOCK:
+		{
+			switch(kind)
+			{
+				case TOKEN_EOF:
+				case TOKEN_SEMICOLON:
+				case TOKEN_KEYWORD_END: returun 1;
+				default: return 0;
+			}
+		}
+
+		case DECLARATIONS:
+		case DECLARATIONS_NEW:
+		{
+			switch(kind)
+			{
+				case TOKEN_BEGIN: return 1;
+				default: return 0;
+			}
+		}
+
+		case DECLARATION:
+		case TYPE_DECLARATION:
+		case TYPE_INDICATOR:
+		case STRUCTURE_TYPE:
+		{
+			switch(kind)
+			{
+				case TOKEN_SEMICOLON:
+				case TOKEN_BEGIN: return 1;
+				default: return 0;
+			}
+		}
+
+		case VAR_DECLARATION:
+		case VAR_DECLARATION_NEW:
+		case SIMPLE_TYPE:
+		{
+			switch(kind)
+			{
+				case TOKEN_SEMICOLON:
+				case TOKEN_BEGIN: 
+				case TOKEN_RIGHT_CURLY_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		
 
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	}
+}
+
+
+void recoveryFromError(Grammer i_Variable)
+{
+	while (!isFollowOfVariable(i_Variable, currentToken->kind) && currentToken->kind != TOKEN_EOF)
+	{
+		currentToken = next_token();
+	}
+
+	back_token();
+}

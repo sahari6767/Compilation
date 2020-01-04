@@ -1,4 +1,4 @@
-#include "Token.h"
+#include "Tokens.h"
 
 typedef enum Grammer
 {
@@ -28,7 +28,7 @@ typedef enum Grammer
         FIELD_ACCESS,
         EXPRESSION,
         EXPRASSION_NEW,
-        SIMPLE_EXPRASSIO,
+        SIMPLE_EXPRASSION,
         KEY,
         CASE_LIST,
         CASE_LIST_NEW,
@@ -62,7 +62,7 @@ void parse_STATEMENTS();//CHECK
 void parse_STATEMENT();//CHECK
 void parse_STATEMENT_NEW();//CHECK
 void parse_VAR_ELEMENT();//CHECK
-void parse_VAR_ELEMENT_NEW();
+void parse_VAR_ELEMENT_NEW();//CHECK
 void parse_FIELD_ACCESS();
 void parse_EXPRESSION();////check
 void parse_EXPRASSION_NEW();////check

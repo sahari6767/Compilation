@@ -1,12 +1,16 @@
 %option noyywrap
 %{
+#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "Tokens.h"
-#include "Tokens.c"
-
+#include "Parser.h"
+FILE *yyoutLex, *yyoutSyn;
+int lineNumber;
+void error(char*,int);
 int line=1;
 %}
+
 
 DIGIT    [0-9]
 ALPHA [A-Za-z]
@@ -115,7 +119,7 @@ fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n",
 0"."{DIGIT}+|[1-9]{DIGIT}*"."{DIGIT}+ {create_and_store_token(TOKEN_REAL, yytext, line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_REAL",line ,yytext);}
 
-<<EOF>>		{create_and_store_token  (TOKEN_EOF , yytext , line);}
+<<EOF>>		{create_and_store_token(TOKEN_EOF , yytext , line);
 fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n", "TOKEN_EOF",line ,yytext);}
 
 
@@ -125,6 +129,9 @@ fprintf(yyout ,"Token - '{%s}' founded in line number: {%d}, lexeme: '{%s}'.\n",
 
 %%
 
+
+/*
+--------------------------
 int main(){
 
 yyin = fopen( "//home/osboxes//Documents//test1.txt", "r" );
@@ -144,6 +151,100 @@ fclose(yyout);
 yyrestart(yyin);
 
 return 0;
+}--------------------------
+*/
+
+void error(char *lexeme ,int lineNum)
+{
+	fprintf(yyoutLex, "\nThe character {%s} at line: {%d} does not begin any legal token in the language\n\n",lexeme, lineNum);
+}
+
+
+int main()
+{
+	extern int isFirstToken;
+	char* pathToFileTest1 = "C:\\temp2\\test1.txt";
+	char* pathToFileTest2 = "C:\\temp2\\test2.txt";
+	char* pathToExportResultFileTestLex1 =  "C:\\temp2\\test1_305391351_304858855_lex.txt";
+	char* pathToExportResultFileTestLex2 =  "C:\\temp2\\test2_305391351_304858855_lex.txt";
+	char* pathToExportResultFileTestSyn1 =  "C:\\temp2\\test1_305391351_304858855_syntactic.txt";
+	char* pathToExportResultFileTestSyn2 =  "C:\\temp2\\test2_305391351_304858855_syntactic.txt";
+	eTOKENS kind;
+	lineNumber = 1;
+	
+	printf("File Test1:\n");
+	yyin = fopen(pathToFileTest1 ,"r");
+	if(!yyin)
+	{
+		/* can't open file test1 for some reason */
+		printf("Error opening file: C:\\temp2\\test1.txt\n");
+	}
+	else
+	{
+		/* file is open */
+		yyoutLex = fopen(pathToExportResultFileTestLex1 ,"w");
+		yyoutSyn = fopen(pathToExportResultFileTestSyn1 ,"w");
+		mainParser();
+		printf("Done! see result on C:\\temp2\\test1_305391351_304858855_lex.txt\n");
+		printf("Done! see result on C:\\temp2\\test1_305391351_304858855_syntactic.txt\n");
+	}
+	
+	/* Close file */
+	if(yyin)
+		fclose (yyin);
+	
+	if(yyoutLex)
+	{
+		fclose (yyoutLex);
+	}
+	
+	if(yyoutSyn)
+	{
+		fclose (yyoutSyn);
+	}
+
+	freeMemoryTokens(); /* Release memory allocation */
+	lineNumber = 1; /* Reset the line number counter for the second file test  */
+	isFirstToken = 1;
+	
+	printf("\n\n\nFile Test2:\n");
+	yyin = fopen(pathToFileTest2 ,"r");
+	if(!yyin)
+	{
+		/* can't open file test2 for some reason */
+		printf("Error opening file: C:\\temp2\\test2.txt\n");
+	}
+	else
+	{
+		/* file is open */
+		yyoutLex = fopen(pathToExportResultFileTestLex2 ,"w");
+		yyoutSyn = fopen(pathToExportResultFileTestSyn2 ,"w");
+		mainParser();
+		printf("Done! see result on C:\\temp2\\test2_305391351_304858855_lex.txt\n");
+		printf("Done! see result on C:\\temp2\\test2_305391351_304858855_syntactic.txt\n");
+	}
+
+	/* Close file */
+	if(yyin)
+	{
+		fclose (yyin);
+	}
+	
+	if(yyoutLex)
+	{
+		fclose (yyoutLex);
+	}
+	
+	if(yyoutSyn)
+	{
+		fclose (yyoutSyn);
+	}
+
+	freeMemoryTokens(); /* Release memory allocation */
+
+	printf("\n\n\n\nPress any key to exit\n");
+	_getch();
+	return 0;
 }
 
 

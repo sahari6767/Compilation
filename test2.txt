@@ -1,0 +1,47 @@
+$$ A test for part2 of the project.
+$$ Purports to be syntactically correct.
+$$ For any syntactic error, please alert us.
+
+block
+	x : integer;
+	y : real;
+	arr : array [45] of integer;
+	sum : array [50] of real;
+	
+	type _color is enum { black, white, red, blue, green, orange };
+	type _point is struct { x : integer; y : integer; point_color : _color };
+	type _week is enum { sunday, monday, tuesday, wednesday, thursday, friday, saturday };
+	
+	week_day : _week;
+	myPoint : _point
+	$$ There is ';' between statements only, last statement without ';'
+begin
+	week_day = tuesday;
+	x = 5;
+	y = 2.3;
+	myPoint.x = 3; myPoint.y = 5; myPoint.point_color = red;
+	arr[2] = 8;
+	arr[4.5] = 13;
+	arr[4 + y] = 23;
+	arr[x + arr[4]] = x + arr[4];
+	sum[arr[9]] = 18;
+	sum[arr[9+2*3] - 7] = 15;
+	sum[myPoint.x] = 80;
+	sum[myPoint.x + myPoint.y] = sum[myPoint.x + myPoint.y] * 81 ;
+
+	switch(myPoint.point_color)	
+	{
+		case orange:	{x = 9; block pi : real begin pi = 3.14 end; break}
+		case green:	{x = 8;	break};
+		default: x = 0; break
+	};
+
+	block
+		z : integer;
+		zeroPoint : _point
+	begin
+		zeroPoint.x = 0;
+		zeroPoint.y = 0;
+		break
+	end
+end
