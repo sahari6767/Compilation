@@ -357,26 +357,80 @@ void parse_STRUCTURE_TYPE()
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_STRUCT] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(STRUCTURE_TYPET);
+			recoveryFromError(STRUCTURE_TYPE);
 		}
 	}
 }
 
-void parse_FIELDS(){
+void parse_FIELDS()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (FIELDS -> FIELDS_NEW ; FIELD)\n");
+			back_token();
+			parse_FIELD();
+			break;
+		}
 
+		case TOKEN_RIGHT_CURLY_BRACKETS:
+		{
+			fprintf(yyoutSyn, "Rule (FIELDS -> epsilon\n");
+			back_token();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(FIELDS);
+		}
+	}
 }
 
-void parse_FIELDS_NEW(){}
+void parse_FIELDS_NEW()
+{
+	currentToken = next_token();	
+	Token* secondToken = peek();
+		if (secondToken->kind == TOKEN_ID)
+		{
+			switch (currentToken->kind)
+			case TOKEN_SEMICOLON:
+				{
+					fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; FIELD FIELDS_NEW\n");
+					parse_FIELD();
+					parse_FIELDS_NEW();
+					break;	
+				}
+			default:
+				{
+					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+					recoveryFromError(VAR_DEFINITIONS_TAG);
+
+				}
+
+			else
+			{
+				back_token();
+				fprintf(yyoutSyn, "Rule (FIELDS_NEW ->  epsilon)\n");
+
+			}
+		}
+}
+
+
 void parse_FIELD(){}
 void parse_STATEMENTS(){}
 void parse_STATEMENT(){}
 void parse_VAR_ELEMENT(){}
 void parse_VAR_ELEMENT_NEW(){}
 void parse_FIELD_ACCESS(){}
-void parse_EXPRESSION(){
 
-	
-}
+
+//-----------avichai handling--------------------
+void parse_EXPRESSION(){}
 void parse_EXPRASSION_NEW(){}
 void parse_SIMPLE_EXPRASSION(){}
 void parse_KEY(){}
