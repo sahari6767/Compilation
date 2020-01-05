@@ -69,19 +69,20 @@ void parse_DECLARATIONS_NEW()
 	{
 		case TOKEN_SEMICOLON:
 		{
-			Token* secondToken = peek();//WTF IS THAT??
-			if (secondToken->kind == TOKEN_ID || secondToken->kind == TOKEN_TYPE)
-			{
+			//Token* secondToken = peek();//WTF IS THAT??
+			//if (secondToken->kind == TOKEN_ID || secondToken->kind == TOKEN_TYPE)
+			
 				fprintf(yyoutSyn, "Rule (DECLARATIONS_NEW -> ; DECLARATIONS)\n");
 				parse_DECLARATIONS();
-			}
-			else
-			{
-				back_token();
+				break;
+			//}//
+			//else
+			//{
+			//	back_token();
 				fprintf(yyoutSyn, "Rule (DECLARATIONS_NEW -> epsilon)\n");
-			}
+		//	}
 
-			break;
+			//break;
 		}
 
 		case TOKEN_RIGHT_PARENTHESES:
@@ -122,7 +123,7 @@ void parse_DECLARATION()
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_REAL, TOKEN_INTEGER, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID, TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(DECLARATION);
 		}
 	}
@@ -199,7 +200,7 @@ void parse_SIZE()
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
-		case TOKEN_INTEGER:
+		case TOKEN_INTEGER_NUM:
 		{
 			fprintf(yyoutSyn, "SIZE -> int_num)\n");
 			break;
@@ -207,7 +208,7 @@ void parse_SIZE()
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SIZE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(SIZE);
 
 		} 		
@@ -626,8 +627,8 @@ void parse_EXPRESSION(){
 	currentToken = next_token();
 	switch(currentToken->kind)
 	{
-		case TOKEN_REAL:
-		case TOKEN_INTEGER:
+		case TOKEN_REAL_NUM:
+		case TOKEN_INTEGER_NUM:
 		case TOKEN_ID:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRESSION -> SIMPLE_EXPRASSION EXPRASSION_NEW)\n");
@@ -639,7 +640,7 @@ void parse_EXPRESSION(){
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER, TOKEN_REAL, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM, TOKEN_REAL_NUM, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(EXPRESSION);
 		}
 	}
@@ -691,8 +692,8 @@ void parse_SIMPLE_EXPRASSION(){
 	currentToken = next_token();
 	switch(currentToken->kind)
 	{
-		case TOKEN_REAL:
-		case TOKEN_INTEGER:
+		case TOKEN_REAL_NUM:
+		case TOKEN_INTEGER_NUM:
 		case TOKEN_ID:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> int_num | real_num | VAR_ELEMENT)\n");
@@ -703,7 +704,7 @@ void parse_SIMPLE_EXPRASSION(){
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER, TOKEN_REAL, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM, TOKEN_REAL, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(SIMPLE_EXPRASSION);
 		}
 	}
@@ -787,7 +788,7 @@ void parse_KEY_VALUE(){
 	currentToken = next_token();
 	switch(currentToken->kind)
 	{
-		case TOKEN_INTEGER:
+		case TOKEN_INTEGER_NUM:
 		{
 			fprintf(yyoutSyn, "Rule (KEY_VALUE -> int_num)\n");
 			break;
@@ -800,7 +801,7 @@ void parse_KEY_VALUE(){
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID, TOKEN_INTEGER] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID, TOKEN_INTEGER_NUM] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(KEY_VALUE);
 		}	
 	}

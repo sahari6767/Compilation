@@ -110,8 +110,8 @@ char* convertFromTokenKindToString(eTOKENS i_Kind)
 	switch(i_Kind)
 	{
 		case TOKEN_KEYWORD_END: return "TOKEN_KEYWORD_END";
-		case TOKEN_REAL_NUM: return "TOKEN_REAL_NUM";
-		case TOKEN_INT: return "TOKEN_INT";
+		case TOKEN_REAL: return "TOKEN_REAL";
+		case TOKEN_INTEGER: return "TOKEN_INTEGER";
 		case TOKEN_DOT: return "TOKEN_DOT";
 		case TOKEN_BLOCK: return "TOKEN_BLOCK";
 		case TOKEN_BEGIN: return "TOKEN_BEGIN";
@@ -141,8 +141,8 @@ char* convertFromTokenKindToString(eTOKENS i_Kind)
 		case TOKEN_RIGHT_BRACKETS: return "TOKEN_RIGHT_BRACKETS";
 		case TOKEN_RIGHT_CURLY_BRACKETS: return "TOKEN_RIGHT_CURLY_BRACKETS";
 		case TOKEN_TYPE_NAME: return "TOKEN_TYPE_NAME";
-		case TOKEN_INTEGER: return "TOKEN_INTEGER";
-		case TOKEN_REAL: return "TOKEN_REAL";
+		case TOKEN_INTEGER_NUM: return "TOKEN_INTEGER_NUM";
+		case TOKEN_REAL_NUM: return "TOKEN_REAL_NUM";
 		case TOKEN_EOF: return "TOKEN_EOF";
 	}
 	return "Err";
