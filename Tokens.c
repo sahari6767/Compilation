@@ -28,23 +28,25 @@ Node* currentNodeOfNextToken = NULL;
 * This function creates a token and stores it in the storage.
 */
 void create_and_store_token(eTOKENS kind, char* lexeme, int numOfLine)
-{ 
-	int length = strlen(lexeme)+1;
-	
+{
+	int length = strlen(lexeme) + 1;
+
 	// case 1: there is still no tokens in the storage.
 	if (currentNode == NULL)
 	{
+		howMuchNodeAlocate++;
 		currentNode = (Node*)malloc(sizeof(Node));
-
-		if(currentNode == NULL)
+		headNode = currentNode; // keep the head
+		currentNodeOfNextToken = currentNode;
+		if (currentNode == NULL)
 		{
-			fprintf(yyout,"\nUnable to allocate memory! \n"); 
+			fprintf(yyoutLex, "\nUnable to allocate memory! \n");
 			exit(0);
 		}
-		currentNode->tokensArray = (Token*)calloc(sizeof(Token),TOKEN_ARRAY_SIZE);
-		if(currentNode->tokensArray == NULL)
+		currentNode->tokensArray = (Token*)calloc(sizeof(Token), TOKEN_ARRAY_SIZE);
+		if (currentNode->tokensArray == NULL)
 		{
-			fprintf(yyout,"\nUnable to allocate memory! \n"); 
+			fprintf(yyoutLex, "\nUnable to allocate memory! \n");
 			exit(0);
 		}
 		currentNode->prev = NULL;
@@ -58,20 +60,21 @@ void create_and_store_token(eTOKENS kind, char* lexeme, int numOfLine)
 		if (currentIndex == TOKEN_ARRAY_SIZE - 1)
 		{
 			currentIndex = 0;
+			howMuchNodeAlocate++;
 			currentNode->next = (Node*)malloc(sizeof(Node));
 
-			if(currentNode == NULL)
+			if (currentNode == NULL)
 			{
-				fprintf(yyout,"\nUnable to allocate memory! \n"); 
+				fprintf(yyoutLex, "\nUnable to allocate memory! \n");
 				exit(0);
 			}
 			currentNode->next->prev = currentNode;
 			currentNode = currentNode->next;
-			currentNode->tokensArray = (Token*)calloc(sizeof(Token),TOKEN_ARRAY_SIZE);
+			currentNode->tokensArray = (Token*)calloc(sizeof(Token), TOKEN_ARRAY_SIZE);
 
-			if(currentNode->tokensArray == NULL)
+			if (currentNode->tokensArray == NULL)
 			{
-				fprintf(yyout,"\nUnable to allocate memory! \n"); 
+				fprintf(yyoutLex, "\nUnable to allocate memory! \n");
 				exit(0);
 			}
 			currentNode->next = NULL;
@@ -84,17 +87,23 @@ void create_and_store_token(eTOKENS kind, char* lexeme, int numOfLine)
 		}
 	}
 
-	currentNode->tokensArray[currentIndex].kind = kind;	
+	currentNode->tokensArray[currentIndex].kind = kind;
 	currentNode->tokensArray[currentIndex].lineNumber = numOfLine;
 
 	currentNode->tokensArray[currentIndex].lexeme = (char*)malloc(sizeof(char)*length);
-	#ifdef _WIN32
-		strcpy_s(currentNode->tokensArray[currentIndex].lexeme, length, lexeme);
-	#else
-		strcpy(currentNode->tokensArray[currentIndex].lexeme, lexeme);
-	#endif		
+#ifdef _WIN32
+	strcpy_s(currentNode->tokensArray[currentIndex].lexeme, length, lexeme);
+#else
+	strcpy(currentNode->tokensArray[currentIndex].lexeme, lexeme);
+#endif		
 }
 
+eTOKENS Handle_token(eTOKENS kind,char *lexeme ,int lineNum)
+{
+	create_and_store_token(kind, lexeme, lineNum);
+	fprintf(yyoutLex, "Token of kind: %-30s \t was found at line: %3d. \t lexeme: %s\n", convertFromTokenKindToString(kind), lineNum, lexeme);
+	return kind;
+}
 
 char* convertFromTokenKindToString(eTOKENS i_Kind)
 {

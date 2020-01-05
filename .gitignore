@@ -15,3 +15,6 @@ win.lex.yy.c
 windows.vbs
 README.txt
 Ron-Parser.c
+project.code-workspace
+test1_305391351_304858855_lex.txt
+test1_305391351_304858855_syntactic.txt

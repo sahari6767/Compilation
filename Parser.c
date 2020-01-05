@@ -814,7 +814,7 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 		{
 			switch(kind)
 			{
-				case TOKEN_EOF: returun 1;
+				case TOKEN_EOF: return 1;
 				default: return 0;
 			}
 		}	
@@ -825,7 +825,7 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 			{
 				case TOKEN_EOF:
 				case TOKEN_SEMICOLON:
-				case TOKEN_KEYWORD_END: returun 1;
+				case TOKEN_KEYWORD_END: return 1;
 				default: return 0;
 			}
 		}
@@ -865,6 +865,117 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 				default: return 0;
 			}
 		}
+
+		case SIZE:
+		case EXPRESSION:
+		case EXPRASSION_NEW:
+		case SIMPLE_EXPRASSION:
+		{
+			switch(kind)
+			{
+				case TOKEN_RIGHT_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		case ENUM_TYPE:
+		{
+			switch(kind)
+			{
+				case TOKEN_STRUCT: return 1;
+				default: return 0;
+			}
+		}
+
+		case ID_LIST:
+		case ID_LIST_NEW:
+		case FIELDS:
+		{
+			switch(kind)
+			{
+				case TOKEN_RIGHT_CURLY_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		case FIELDS_NEW:
+		case CASE_LIST:
+		case CASE_LIST_NEW:
+		{
+			switch(kind)
+			{
+				case TOKEN_SEMICOLON: return 1;
+				default: return 0;
+			}
+		}
+
+		case FIELD:
+		{
+			switch(kind)
+			{
+				case TOKEN_RIGHT_BRACKETS:
+				case TOKEN_SEMICOLON: return 1;
+				default: return 0;
+			}
+		}
+
+		case STATEMENTS:
+		case STATEMANTS_NEW:
+		{
+			switch(kind)
+			{
+				case TOKEN_KEYWORD_END:
+				case TOKEN_RIGHT_CURLY_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		case STATEMENT:
+		{
+			switch(kind)
+			{
+				case TOKEN_SEMICOLON:
+				case TOKEN_KEYWORD_END:
+				case TOKEN_RIGHT_CURLY_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		case VAR_ELEMENT:
+		case VAR_ELEMENT_NEW:
+		case FIELD_ACCESS:
+		case KEY:
+		{
+			switch(kind)
+			{
+				case TOKEN_ASSIGNMENT:
+				case TOKEN_RIGHT_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		case CASE:
+		{
+			switch(kind)
+			{
+				case TOKEN_CASE:
+				case TOKEN_SEMICOLON: return 1;
+				default: return 0;
+			}
+		}
+
+		case KEY_VALUE:
+		{
+			switch(kind)
+			{
+				case TOKEN_COLON: return 1;
+				default: return 0;
+			}
+		}
+
+		
+
+
 
 		
 
