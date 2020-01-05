@@ -85,7 +85,7 @@ void parse_DECLARATIONS_NEW()
 			//break;
 		}
 
-		case TOKEN_RIGHT_PARENTHESES:
+		case TOKEN_BEGIN:
 		{
 			fprintf(yyoutSyn, "Rule (DECLARATIONS_NEW -> epsilon)\n");
 			back_token();
@@ -246,7 +246,6 @@ void parse_TYPE_DECLARATION()
 		case TOKEN_TYPE:
 		{
 			fprintf(yyoutSyn, "Rule (TYPE_DECLARATION -> type type_name is TYPE_INDICATOR\n");
-			match(TOKEN_TYPE);
 			match(TOKEN_TYPE_NAME);
 			match(TOKEN_IS);
 			parse_TYPE_INDICATOR();
@@ -265,8 +264,29 @@ void parse_TYPE_DECLARATION()
 void parse_TYPE_INDICATOR()
 {
 	fprintf(yyoutSyn, "Rule (TYPE_INDICATOR -> ENUM_TYPE STRUCTURE_TYPE\n");
-	parse_ENUM_TYPE();
-	parse_STRUCTURE_TYPE();
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_ENUM:
+		{
+			back_token();
+			parse_ENUM_TYPE();
+			break;
+		}
+		case TOKEN_STRUCT:
+		{
+			back_token();
+			parse_STRUCTURE_TYPE();
+			break;
+		}
+		
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ENUM,TOKEN_STRUCT] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(TYPE_INDICATOR);
+
+		}
+	}
 }
 
 
@@ -281,7 +301,13 @@ void parse_ENUM_TYPE()
 			match(TOKEN_LEFT_CURLY_BRACKETS);
 			parse_ID_LIST();
 			match(TOKEN_RIGHT_CURLY_BRACKETS);
+			break;
 		}
+		/*case TOKEN_RIGHT_CURLY_BRACKETS:
+		//{
+		//	fprintf(yyoutSyn, "Rule (ENUM_TYPE -> epsilon\n");	
+		//	break;
+		}*/
 
 		default:
 		{
@@ -321,11 +347,11 @@ void parse_ID_LIST_NEW()
 		case TOKEN_COMMA:
 		{
 			fprintf(yyoutSyn, "ID_LIST_NEW -> , ID_LIST_NEW\n");
-			parse_ID_LIST_NEW();
+			parse_ID_LIST();
 			break;
 		}
 
-		case TOKEN_SEMICOLON:
+		case TOKEN_RIGHT_CURLY_BRACKETS:
 		{
 			fprintf(yyoutSyn, "ID_LIST_NEW -> epsilon\n");
 			back_token();
@@ -334,7 +360,7 @@ void parse_ID_LIST_NEW()
 		
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_COMMA,TOKEN_SEMICOLON] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_COMMA,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(ID_LIST_NEW);
 		}
 	}
@@ -348,7 +374,6 @@ void parse_STRUCTURE_TYPE()
 		case TOKEN_STRUCT:
 		{
 			fprintf(yyoutSyn, "Rule (STRUCTURE_TYPE -> struct { FIELDS }\n");
-			match(TOKEN_STRUCT);
 			match(TOKEN_LEFT_CURLY_BRACKETS);
 			parse_FIELDS();
 			match(TOKEN_RIGHT_CURLY_BRACKETS);
@@ -573,11 +598,13 @@ void parse_VAR_ELEMENT_NEW()
 			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> FIELD_ACCESS)\n");
 			back_token();
 			parse_FIELD_ACCESS();
+			break;
 		}
 		case TOKEN_LEFT_BRACKETS: //not sure
 		{
 			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> [EXPRESSION] FIELD_ACCESS)\n");
 			parse_EXPRESSION();
+			break;
 		}
 		default:
 		{

@@ -6,7 +6,6 @@
 #include "Tokens.h"
 #include "Parser.h"
 FILE *yyoutLex, *yyoutSyn;
-int lineNumber;
 void error(char*,int);
 int line=1;
 %}
@@ -15,7 +14,12 @@ int line=1;
 DIGIT    [0-9]
 ALPHA [A-Za-z]
 UNDERSCORE [_]
+%x comment
 %%
+
+"$$"   BEGIN(comment);
+<comment>[^\n]                 
+<comment>\n   {line++; BEGIN(0);}
 
 "end" {return Handle_token(TOKEN_KEYWORD_END, yytext, line);}
 
@@ -90,7 +94,10 @@ UNDERSCORE [_]
 
 "\n"				{line++;}
 " "
-"\t"			
+"\t"
+"\v"
+"\f"
+"\r"			
 	. 		 {error(yytext,line);} 
 
 %%
@@ -136,7 +143,7 @@ int main()
 	char* pathToExportResultFileTestSyn1 =  "C:\\temp2\\test1_305391351_304858855_syntactic.txt";
 	char* pathToExportResultFileTestSyn2 =  "C:\\temp2\\test2_305391351_304858855_syntactic.txt";
 	eTOKENS kind;
-	lineNumber = 1;
+	line = 1;
 	
 	printf("File Test1:\n");
 	yyin = fopen(pathToFileTest1 ,"r");
@@ -170,7 +177,7 @@ int main()
 	}
 
 	freeMemoryTokens(); /* Release memory allocation */
-	lineNumber = 1; /* Reset the line number counter for the second file test  */
+	line = 1; /* Reset the line number counter for the second file test  */
 	isFirstToken = 1;
 	
 	printf("\n\n\nFile Test2:\n");
