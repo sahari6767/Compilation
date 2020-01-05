@@ -69,20 +69,9 @@ void parse_DECLARATIONS_NEW()
 	{
 		case TOKEN_SEMICOLON:
 		{
-			//Token* secondToken = peek();//WTF IS THAT??
-			//if (secondToken->kind == TOKEN_ID || secondToken->kind == TOKEN_TYPE)
-			
 				fprintf(yyoutSyn, "Rule (DECLARATIONS_NEW -> ; DECLARATIONS)\n");
 				parse_DECLARATIONS();
 				break;
-			//}//
-			//else
-			//{
-			//	back_token();
-				fprintf(yyoutSyn, "Rule (DECLARATIONS_NEW -> epsilon)\n");
-		//	}
-
-			//break;
 		}
 
 		case TOKEN_BEGIN:
@@ -118,6 +107,12 @@ void parse_DECLARATION()
 			fprintf(yyoutSyn, "Rule (DECLARATION -> TYPE_DECLARATION)\n");
 			back_token();
 			parse_TYPE_DECLARATION();
+			break;
+		}
+		case TOKEN_BEGIN:
+		{
+			fprintf(yyoutSyn, "Rule (DECLARATION -> epsilon)\n");
+			back_token();
 			break;
 		}
 
@@ -185,6 +180,7 @@ void parse_VAR_DECLARATION_NEW()
 		case TOKEN_TYPE_NAME:
 		{
 			fprintf(yyoutSyn, "VAR_DECLARATION_NEW -> type_name)\n"); 
+			break;
 		}
 		
 		default:
@@ -376,7 +372,6 @@ void parse_STRUCTURE_TYPE()
 			fprintf(yyoutSyn, "Rule (STRUCTURE_TYPE -> struct { FIELDS }\n");
 			match(TOKEN_LEFT_CURLY_BRACKETS);
 			parse_FIELDS();
-			match(TOKEN_RIGHT_CURLY_BRACKETS);
 			break;
 		}
 		default:
@@ -389,38 +384,13 @@ void parse_STRUCTURE_TYPE()
 
 void parse_FIELDS()
 {
-	currentToken = next_token();
-	switch (currentToken->kind)
-	{
-		case TOKEN_SEMICOLON:
-		{
-			fprintf(yyoutSyn, "Rule (FIELDS -> FIELDS_NEW ; FIELD)\n");
-			back_token();
-			parse_FIELD();
-			break;
-		}
-
-		case TOKEN_RIGHT_CURLY_BRACKETS:
-		{
-			fprintf(yyoutSyn, "Rule (FIELDS -> epsilon\n");
-			back_token();
-			break;
-		}
-
-		default:
-		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(FIELDS);
-		}
-	}
+	parse_FIELD();
+	parse_FIELDS_NEW();
 }
 
 void parse_FIELDS_NEW()
 {
-	currentToken = next_token();	
-	Token* secondToken = peek();
-		if (secondToken->kind == TOKEN_ID)
-		{
+			currentToken = next_token();	
 			switch (currentToken->kind)
 			{
 			case TOKEN_SEMICOLON:
@@ -430,17 +400,18 @@ void parse_FIELDS_NEW()
 					parse_FIELDS_NEW();
 					break;	
 				}
+
+			case TOKEN_RIGHT_CURLY_BRACKETS:
+			{
+					fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; epsilon\n");
+					break;
+
+			}
 			default:
 				{
 					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 					recoveryFromError(FIELDS_NEW);
 				}
-			}
-		}
-		else
-			{
-				back_token();
-				fprintf(yyoutSyn, "Rule (FIELDS_NEW ->  epsilon)\n");
 			}
 }
 
@@ -553,31 +524,29 @@ void parse_VAR_ELEMENT()
 	{
 
 		case TOKEN_ID:
-		{
-			Token* secondToken = peek();
-			if (secondToken->kind == TOKEN_LEFT_BRACKETS)
+		{	
+			currentToken = next_token();
+			switch(currentToken->kind)
 			{
-				fprintf(yyoutSyn, "VAR_ELEMENT  -> id[EXPRESSION])\n");
-				back_token();
-				match(TOKEN_LEFT_BRACKETS);
-				parse_EXPRESSION();
-				match(TOKEN_RIGHT_BRACKETS);	
-			}
-			else
-			{
-				fprintf(yyoutSyn, "VAR_ELEMENT  -> id VAR_ELEMENT_NEW)\n");
-				parse_VAR_ELEMENT_NEW();
-			}
-			break;
-		}
+				case TOKEN_DOT:
+				{
+					parse_FIELD_ACCESS();
+					back_token();
+					break;
+				}
 
-		case TOKEN_ASSIGNMENT:// not sure
-		case TOKEN_RIGHT_BRACKETS:// not sure
-		{
-			fprintf(yyoutSyn, "VAR_ELEMENT  -> FIELD_ACCESS)\n");
-			fprintf(yyoutSyn, "FIELD_ACCESS -> epsilon)\n");
-			back_token();
-			parse_FIELD_ACCESS();
+				case TOKEN_LEFT_BRACKETS:
+				{
+					parse_EXPRESSION();
+					match(TOKEN_RIGHT_BRACKETS);
+					break;		
+				}
+				default:
+				{
+					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+					recoveryFromError(VAR_ELEMENT);
+				}
+			}
 			break;
 		}
 		default:
