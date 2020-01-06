@@ -85,9 +85,9 @@ UNDERSCORE [_]
 
 {UNDERSCORE}({ALPHA}|{DIGIT}|{UNDERSCORE}{ALPHA}|{UNDERSCORE}{DIGIT})* {return Handle_token(TOKEN_TYPE_NAME, yytext, line);}
 
-0|[1-9]{DIGIT}* {return Handle_token(TOKEN_INTEGER_NUM, yytext, line);}
+[0-9]{DIGIT}* {return Handle_token(TOKEN_INTEGER_NUM, yytext, line);}
 
-0"."{DIGIT}+|[1-9]{DIGIT}*"."{DIGIT}+ {return Handle_token(TOKEN_REAL_NUM, yytext, line);}
+[0-9]{DIGIT}*"."{DIGIT}+ {return Handle_token(TOKEN_REAL_NUM, yytext, line);}
 
 <<EOF>>		{return Handle_token(TOKEN_EOF , yytext , line);}
 
@@ -103,29 +103,6 @@ UNDERSCORE [_]
 %%
 
 
-/*
---------------------------
-int main(){
-
-yyin = fopen( "//home/osboxes//Documents//test1.txt", "r" );
-yyout = fopen( "//home//ubuntu//Documents//test1_313173213_204159784_204367387_lex.txt", "w" );
-
-yylex();
-fclose(yyin);
-fclose(yyout);
-yyrestart(yyin);
-
-yyin = fopen( "//home/osboxes//Documents//test2.txt", "r" );
-yyout = fopen( "//home//ubuntu//Documents//test2_313173213_204159784_204367387_lex.txt", "w" );
-
-yylex();
-fclose(yyin);
-fclose(yyout);
-yyrestart(yyin);
-
-return 0;
-}--------------------------
-*/
 
 void error(char *lexeme ,int lineNum)
 {
@@ -136,12 +113,12 @@ void error(char *lexeme ,int lineNum)
 int main()
 {
 	extern int isFirstToken;
-	char* pathToFileTest1 = "C:\\temp2\\test1.txt";
-	char* pathToFileTest2 = "C:\\temp2\\test2.txt";
-	char* pathToExportResultFileTestLex1 =  "C:\\temp2\\test1_305391351_304858855_lex.txt";
-	char* pathToExportResultFileTestLex2 =  "C:\\temp2\\test2_305391351_304858855_lex.txt";
-	char* pathToExportResultFileTestSyn1 =  "C:\\temp2\\test1_305391351_304858855_syntactic.txt";
-	char* pathToExportResultFileTestSyn2 =  "C:\\temp2\\test2_305391351_304858855_syntactic.txt";
+	char* pathToFileTest1 = "C:\\temp\\test1.txt";
+	char* pathToFileTest2 = "C:\\temp\\test2.txt";
+	char* pathToExportResultFileTestLex1 =  "C:\\temp\\test1_313173213_204159784_204367387_lex.txt";
+	char* pathToExportResultFileTestLex2 =  "C:\\temp\\test2_313173213_204159784_204367387_lex.txt";
+	char* pathToExportResultFileTestSyn1 =  "C:\\temp\\test1_313173213_204159784_204367387_syntactic.txt";
+	char* pathToExportResultFileTestSyn2 =  "C:\\temp\\test2_313173213_204159784_204367387_syntactic.txt";
 	eTOKENS kind;
 	line = 1;
 	
@@ -150,7 +127,7 @@ int main()
 	if(!yyin)
 	{
 		/* can't open file test1 for some reason */
-		printf("Error opening file: C:\\temp2\\test1.txt\n");
+		printf("Error opening file: C:\\temp\\test1.txt\n");
 	}
 	else
 	{
@@ -158,8 +135,8 @@ int main()
 		yyoutLex = fopen(pathToExportResultFileTestLex1 ,"w");
 		yyoutSyn = fopen(pathToExportResultFileTestSyn1 ,"w");
 		mainParser();
-		printf("Done! see result on C:\\temp2\\test1_305391351_304858855_lex.txt\n");
-		printf("Done! see result on C:\\temp2\\test1_305391351_304858855_syntactic.txt\n");
+		printf("Done! see result on C:\\temp\\test1_313173213_204159784_204367387_lex.txt\n");
+		printf("Done! see result on C:\\temp\\test1_313173213_204159784_204367387_syntactic.txt\n");
 	}
 	
 	/* Close file */
@@ -185,7 +162,7 @@ int main()
 	if(!yyin)
 	{
 		/* can't open file test2 for some reason */
-		printf("Error opening file: C:\\temp2\\test2.txt\n");
+		printf("Error opening file: C:\\temp\\test2.txt\n");
 	}
 	else
 	{
@@ -193,8 +170,8 @@ int main()
 		yyoutLex = fopen(pathToExportResultFileTestLex2 ,"w");
 		yyoutSyn = fopen(pathToExportResultFileTestSyn2 ,"w");
 		mainParser();
-		printf("Done! see result on C:\\temp2\\test2_305391351_304858855_lex.txt\n");
-		printf("Done! see result on C:\\temp2\\test2_305391351_304858855_syntactic.txt\n");
+		printf("Done! see result on C:\\temp\\test2_313173213_204159784_204367387_lex.txt\n");
+		printf("Done! see result on C:\\temp\\test2_313173213_204159784_204367387_syntactic.txt\n");
 	}
 
 	/* Close file */
