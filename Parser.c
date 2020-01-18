@@ -530,17 +530,33 @@ void parse_VAR_ELEMENT()
 			{
 				case TOKEN_DOT:
 				{
-					parse_FIELD_ACCESS();
 					back_token();
+					parse_FIELD_ACCESS();
 					break;
 				}
 
 				case TOKEN_LEFT_BRACKETS:
 				{
+					fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> id[EXPRESSION])\n");
 					parse_EXPRESSION();
 					match(TOKEN_RIGHT_BRACKETS);
 					break;		
 				}
+				
+				case TOKEN_ASSIGNMENT:
+				{
+					fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
+					back_token();
+					break;
+				}
+
+				case TOKEN_SEMICOLON:
+				{
+					fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
+					back_token();
+					break;				
+				}
+
 				default:
 				{
 					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
@@ -675,6 +691,20 @@ void parse_EXPRASSION_NEW(){
 			break;
 		}
 
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon)\n");
+			back_token();
+			break;				
+		}
+
+		case TOKEN_RIGHT_BRACKETS:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon)\n");
+			back_token();
+			break;
+		}
+
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_AR_OP_ADD, TOKEN_AR_OP_SUBL, TOKEN_AR_OP_MULTI, TOKEN_AR_OP_DIVIDE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
@@ -689,18 +719,28 @@ void parse_SIMPLE_EXPRASSION(){
 	switch(currentToken->kind)
 	{
 		case TOKEN_REAL_NUM:
+		{
+			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> real_num)\n");
+		}
+
 		case TOKEN_INTEGER_NUM:
+		{
+			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> int_num )\n");
+			break;
+		}
+
 		case TOKEN_ID:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> int_num | real_num | VAR_ELEMENT)\n");
 			back_token();
+			fprintf(yyoutSyn,"we were here\n");
 			parse_VAR_ELEMENT();
 			break;
 		}
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM, TOKEN_REAL, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM, TOKEN_REAL_NUM, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(SIMPLE_EXPRASSION);
 		}
 	}
