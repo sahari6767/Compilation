@@ -369,6 +369,7 @@ void parse_STRUCTURE_TYPE()
 			fprintf(yyoutSyn, "Rule (STRUCTURE_TYPE -> struct { FIELDS }\n");
 			match(TOKEN_LEFT_CURLY_BRACKETS);
 			parse_FIELDS();
+			match(TOKEN_RIGHT_CURLY_BRACKETS);
 			break;
 		}
 		default:
@@ -536,6 +537,7 @@ void parse_VAR_ELEMENT()
 			parse_FIELD_ACCESS();
 			}
 		}
+		break;
 		
 		default:
 		{
@@ -551,7 +553,7 @@ void parse_VAR_ELEMENT_NEW()
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
-		case TOKEN_LEFT_BRACKETS: //not sure
+		case TOKEN_LEFT_BRACKETS: 
 		{
 			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> [EXPRESSION])\n");
 			parse_EXPRESSION();
