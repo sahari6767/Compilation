@@ -60,10 +60,11 @@ void parse_FIELDS_NEW();//CHECK
 void parse_FIELD();//CHECK
 void parse_STATEMENTS();//CHECK
 void parse_STATEMENT();//CHECK
-void parse_STATEMENT_NEW();//CHECK
+void parse_STATEMENTS_NEW();//CHECK
 void parse_VAR_ELEMENT();//CHECK
 void parse_VAR_ELEMENT_NEW();//CHECK
-void parse_FIELD_ACCESS();
+void parse_FIELD_ACCESS();//CHECK
+void parse_FIELD_ACCESS_NEW();//NEW
 void parse_EXPRESSION();////check
 void parse_EXPRASSION_NEW();////check
 void parse_SIMPLE_EXPRASSION();////check

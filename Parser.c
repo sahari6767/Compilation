@@ -109,12 +109,13 @@ void parse_DECLARATION()
 			parse_TYPE_DECLARATION();
 			break;
 		}
-		case TOKEN_BEGIN:
+		//21.1.20 --> No need
+		/*case TOKEN_BEGIN:
 		{
 			fprintf(yyoutSyn, "Rule (DECLARATION -> epsilon)\n");
 			back_token();
 			break;
-		}
+		}*/
 
 		default:
 		{
@@ -153,16 +154,16 @@ void parse_VAR_DECLARATION_NEW()
 		case TOKEN_INTEGER:
 		{
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
-			back_token();//??
-			parse_SIMPLE_TYPE();// Is SIMPLE_TYPE Neccecery?
+			back_token();
+			parse_SIMPLE_TYPE();
 			break;
 		}
 	
 		case TOKEN_REAL:
 		{
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
-			back_token();//??
-			parse_SIMPLE_TYPE();// Is SIMPLE_TYPE Neccecery?
+			back_token();
+			parse_SIMPLE_TYPE();
 			break;
 		}
 	
@@ -259,18 +260,19 @@ void parse_TYPE_DECLARATION()
 
 void parse_TYPE_INDICATOR()
 {
-	fprintf(yyoutSyn, "Rule (TYPE_INDICATOR -> ENUM_TYPE STRUCTURE_TYPE\n");
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
 		case TOKEN_ENUM:
 		{
+			fprintf(yyoutSyn, "Rule (TYPE_INDICATOR -> ENUM_TYPE\n");
 			back_token();
 			parse_ENUM_TYPE();
 			break;
 		}
 		case TOKEN_STRUCT:
 		{
+			fprintf(yyoutSyn, "Rule (TYPE_INDICATOR -> STRUCTURE_TYPE\n");
 			back_token();
 			parse_STRUCTURE_TYPE();
 			break;
@@ -299,11 +301,6 @@ void parse_ENUM_TYPE()
 			match(TOKEN_RIGHT_CURLY_BRACKETS);
 			break;
 		}
-		/*case TOKEN_RIGHT_CURLY_BRACKETS:
-		//{
-		//	fprintf(yyoutSyn, "Rule (ENUM_TYPE -> epsilon\n");	
-		//	break;
-		}*/
 
 		default:
 		{
@@ -384,37 +381,10 @@ void parse_STRUCTURE_TYPE()
 
 void parse_FIELDS()
 {
+	fprintf(yyoutSyn, "Rule (FIELDS -> FIELD FIELD_NEW\n");
 	parse_FIELD();
 	parse_FIELDS_NEW();
 }
-
-void parse_FIELDS_NEW()
-{
-			currentToken = next_token();	
-			switch (currentToken->kind)
-			{
-			case TOKEN_SEMICOLON:
-				{
-					fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; FIELD FIELDS_NEW\n");
-					parse_FIELD();
-					parse_FIELDS_NEW();
-					break;	
-				}
-
-			case TOKEN_RIGHT_CURLY_BRACKETS:
-			{
-					fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; epsilon\n");
-					break;
-
-			}
-			default:
-				{
-					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-					recoveryFromError(FIELDS_NEW);
-				}
-			}
-}
-
 
 void parse_FIELD()
 {
@@ -422,16 +392,69 @@ void parse_FIELD()
 	parse_VAR_DECLARATION();
 }
 
-
-
+void parse_FIELDS_NEW()
+{
+	currentToken = next_token();	
+	switch (currentToken->kind)
+	{
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; FIELD FIELDS_NEW\n");
+			parse_FIELD();
+			parse_FIELDS_NEW();
+			break;	
+		}
+		case TOKEN_RIGHT_CURLY_BRACKETS:
+		{
+			fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; epsilon\n");
+			back_token();
+			break;
+		}
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(FIELDS_NEW);
+		}
+	}
+}
 
 void parse_STATEMENTS()
 {
 	fprintf(yyoutSyn, "Rule (STATEMENTS -> STATEMENT STATEMANTS_NEW)\n");
 	parse_STATEMENT();
-	parse_STATEMENT_NEW();
+	parse_STATEMENTS_NEW();
 }
 
+
+void parse_STATEMENTS_NEW()
+{
+	currentToken = next_token();
+	switch (currentToken->kind)
+	{
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW ->; STATEMENT STATEMANTS_NEW)\n");
+			parse_STATEMENT();
+			parse_STATEMENTS_NEW();
+			break;
+		}
+
+		case TOKEN_KEYWORD_END:
+		case TOKEN_RIGHT_CURLY_BRACKETS:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
+			back_token();
+			break;
+		}
+
+		default:
+		{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_KEYWORD_END,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(STATEMANTS_NEW);
+		}
+	}
+
+}
 
 void parse_STATEMENT()
 {
@@ -441,6 +464,7 @@ void parse_STATEMENT()
 		case TOKEN_BLOCK:
 		{
 			fprintf(yyoutSyn, "Rule (STATEMENT -> BLOCK)\n");
+			back_token();
 			parse_BLOCK();
 			break;
 		}
@@ -484,39 +508,6 @@ void parse_STATEMENT()
 
 }
 
-
-
-void parse_STATEMENT_NEW()
-{
-	currentToken = next_token();
-	switch (currentToken->kind)
-	{
-		case TOKEN_SEMICOLON:
-		{
-			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW ->; STATEMENT STATEMANTS_NEW)\n");
-			parse_STATEMENT();
-			parse_STATEMENT_NEW();
-			break;
-		}
-
-		case TOKEN_KEYWORD_END:
-		case TOKEN_RIGHT_CURLY_BRACKETS:
-		{
-			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
-			back_token();
-			break;
-		}
-
-		default:
-		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_KEYWORD_END,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(STATEMANTS_NEW);
-		}
-	}
-
-}
-
-
 void parse_VAR_ELEMENT()
 {
 	currentToken = next_token();
@@ -524,53 +515,35 @@ void parse_VAR_ELEMENT()
 	{
 
 		case TOKEN_ID:
-		{	
-			currentToken = next_token();
-			switch(currentToken->kind)
+		{
+			Token* secondToken = peek();
+			if (secondToken->kind == TOKEN_LEFT_BRACKETS )
 			{
-				case TOKEN_DOT:
-				{
-					back_token();
-					parse_FIELD_ACCESS();
-					break;
-				}
-
-				case TOKEN_LEFT_BRACKETS:
-				{
-					fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> id[EXPRESSION])\n");
-					parse_EXPRESSION();
-					match(TOKEN_RIGHT_BRACKETS);
-					break;		
-				}
-				
-				case TOKEN_ASSIGNMENT:
-				{
-					fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
-					back_token();
-					break;
-				}
-
-				case TOKEN_SEMICOLON:
-				{
-					fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
-					back_token();
-					break;				
-				}
-
-				default:
-				{
-					fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-					recoveryFromError(VAR_ELEMENT);
-				}
+			fprintf(yyoutSyn, "(VAR_ELEMENT -> VAR_ELEMENT_NEW)\n");
+			parse_VAR_ELEMENT_NEW();
 			}
-			break;
+
+			else if(secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE)
+			{
+			fprintf(yyoutSyn, "(VAR_ELEMENT -> epsilon)\n");
+			parse_VAR_ELEMENT_NEW();
+			}
+			
+			else
+			{
+			fprintf(yyoutSyn, "(VAR_ELEMENT -> FIELD_ACCESS)\n");
+			back_token();
+			parse_FIELD_ACCESS();
+			}
 		}
+		
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(VAR_ELEMENT);
 		}
-	}	
+		
+	}
 }
 
 void parse_VAR_ELEMENT_NEW()
@@ -578,22 +551,27 @@ void parse_VAR_ELEMENT_NEW()
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
-		case TOKEN_DOT:
-		{
-			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> FIELD_ACCESS)\n");
-			back_token();
-			parse_FIELD_ACCESS();
-			break;
-		}
 		case TOKEN_LEFT_BRACKETS: //not sure
 		{
-			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> [EXPRESSION] FIELD_ACCESS)\n");
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> [EXPRESSION])\n");
 			parse_EXPRESSION();
+			match(TOKEN_RIGHT_BRACKETS);
+			break;
+		}
+
+		case TOKEN_ASSIGNMENT: 
+		case TOKEN_AR_OP_ADD:  
+		case TOKEN_AR_OP_SUB:  
+		case TOKEN_AR_OP_MULTI: 
+		case TOKEN_AR_OP_DIVIDE:
+		{
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> epsilon)\n");
+			back_token();
 			break;
 		}
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_DOT, LEFT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_LEFT_BRACKETS,TOKEN_ASSIGNMENT,TOKEN_AR_OP_ADD,TOKEN_AR_OP_SUB,TOKEN_AR_OP_MULTI,TOKEN_AR_OP_DIVIDE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(VAR_ELEMENT_NEW);
 		}
 	
@@ -605,25 +583,25 @@ void parse_FIELD_ACCESS()
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
-		case TOKEN_DOT:
+		case TOKEN_ID:
 		{
-			fprintf(yyoutSyn, "(FIELD_ACCESS  -> .idFIELD_ACCESS)\n");
-			match(TOKEN_ID);
+			fprintf(yyoutSyn, "(FIELD_ACCESS  -> id.FIELD_ACCESS)\n");
+			match(TOKEN_DOT);
 			parse_FIELD_ACCESS();
 			break;
 		}
-
+		/*21.1.20 --> No need
 		case TOKEN_ASSIGNMENT:
 		case TOKEN_RIGHT_BRACKETS:
 		{
 			fprintf(yyoutSyn, "(FIELD_ACCESS  -> epsilon)\n");
 			back_token();
 			break;
-		}
+		}*/
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_DOT,TOKEN_ASSIGNMENT,TOKEN_RIGHT_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(FIELD_ACCESS);
 
 		}
@@ -631,88 +609,90 @@ void parse_FIELD_ACCESS()
 
 }
 
-
-//-----------avichai handling--------------------
-
-///  ask saar
-void parse_EXPRESSION(){
+void parse_FIELD_ACCESS_NEW()
+{
 	currentToken = next_token();
-	switch(currentToken->kind)
+	switch (currentToken->kind)
 	{
-		case TOKEN_REAL_NUM:
-		case TOKEN_INTEGER_NUM:
 		case TOKEN_ID:
 		{
-			fprintf(yyoutSyn, "Rule (EXPRESSION -> SIMPLE_EXPRASSION EXPRASSION_NEW)\n");
+			Token* secondToken = peek();
+			if (secondToken->kind == TOKEN_DOT)
+			{
+			fprintf(yyoutSyn, "(FIELD_ACCESS_NEW  -> FIELD_ACCESS)\n");
 			back_token();
-			parse_SIMPLE_EXPRASSION();
-			parse_EXPRASSION_NEW();
-			break;
+			}
+
+			else
+			{
+			fprintf(yyoutSyn, "(FIELD_ACCESS_NEW  -> id\n");
+			}
 		}
+		break;
 
 		default:
-		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM, TOKEN_REAL_NUM, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(EXPRESSION);
-		}
+			{
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID(and after TOKEN_DOT)] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(FIELD_ACCESS);
+			}
 	}
 }
 
-void parse_EXPRASSION_NEW(){
+void parse_EXPRESSION()
+{
+
+			fprintf(yyoutSyn, "Rule (EXPRESSION -> SIMPLE_EXPRASSION EXPRASSION_NEW)\n");
+			parse_SIMPLE_EXPRASSION();
+			parse_EXPRASSION_NEW();
+}
+
+void parse_EXPRASSION_NEW()
+{
 	currentToken = next_token();
 	switch(currentToken->kind)
 	{
 		case TOKEN_AR_OP_ADD:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_ADD EXPRESSION)\n");
-			back_token();
 			parse_EXPRESSION();
 			break;
 		}
 		case TOKEN_AR_OP_SUB:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_SUB EXPRESSION)\n");
-			back_token();
 			parse_EXPRESSION();
 			break;
 		}
 		case TOKEN_AR_OP_MULTI:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_MULTI EXPRESSION)\n");
-			back_token();
 			parse_EXPRESSION();
 			break;
 		}
 		case TOKEN_AR_OP_DIVIDE:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_DIVIDE EXPRESSION)\n");
-			back_token();
 			parse_EXPRESSION();
 			break;
 		}
 
 		case TOKEN_SEMICOLON:
+		case TOKEN_KEYWORD_END:
+		case TOKEN_RIGHT_BRACKETS:
+		case TOKEN_RIGHT_CURLY_BRACKETS:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon)\n");
 			back_token();
 			break;				
 		}
 
-		case TOKEN_RIGHT_BRACKETS:
-		{
-			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon)\n");
-			back_token();
-			break;
-		}
-
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_AR_OP_ADD, TOKEN_AR_OP_SUBL, TOKEN_AR_OP_MULTI, TOKEN_AR_OP_DIVIDE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_AR_OP_ADD, TOKEN_AR_OP_SUBL, TOKEN_AR_OP_MULTI, TOKEN_AR_OP_DIVIDE,TOKEN_SEMICOLON,OKEN_KEYWORD_END,TOKEN_RIGHT_BRACKETS,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(EXPRASSION_NEW);
 		}
 	}
 }
-
 
 void parse_SIMPLE_EXPRASSION(){
 	currentToken = next_token();
@@ -721,6 +701,7 @@ void parse_SIMPLE_EXPRASSION(){
 		case TOKEN_REAL_NUM:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> real_num)\n");
+			break;
 		}
 
 		case TOKEN_INTEGER_NUM:
@@ -731,9 +712,8 @@ void parse_SIMPLE_EXPRASSION(){
 
 		case TOKEN_ID:
 		{
-			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> int_num | real_num | VAR_ELEMENT)\n");
+			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> VAR_ELEMENT)\n");
 			back_token();
-			fprintf(yyoutSyn,"we were here\n");
 			parse_VAR_ELEMENT();
 			break;
 		}
@@ -745,44 +725,23 @@ void parse_SIMPLE_EXPRASSION(){
 		}
 	}
 }
+
+
 void parse_KEY()
 {
-	currentToken = next_token();
-	switch(currentToken->kind)
-	{
-		case TOKEN_ID:
-		{
 			fprintf(yyoutSyn, "Rule (KEY -> VAR_ELEMENT)\n");
-			back_token();
 			parse_VAR_ELEMENT();
-			break;
-		}
-		default:
-		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(KEY);
-		}
-	}
 }
-void parse_CASE_LIST(){
-	currentToken = next_token();
-	switch(currentToken->kind)
-	{
-		case TOKEN_CASE:
-		{
+
+
+void parse_CASE_LIST()
+{
 			fprintf(yyoutSyn, "Rule (CASE_LIST -> CASE CASE_LIST_NEW)\n");
-			back_token();
 			parse_CASE();
 			parse_CASE_LIST_NEW();
 			break;
-		}
-		default:
-		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-			recoveryFromError(CASE_LIST);
-		}
-	}
 }
+
 void parse_CASE_LIST_NEW(){
 	currentToken = next_token();
 	switch(currentToken->kind)
@@ -795,13 +754,22 @@ void parse_CASE_LIST_NEW(){
 			parse_CASE_LIST_NEW();
 			break;
 		}
+
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "Rule (CASE_LIST_NEW -> epsilon)\n");
+			back_token();
+			break;
+		}
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE,TOKEN_SEMICOLON] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(CASE_LIST_NEW);
 		}
 	}
 }
+
+
 void parse_CASE()
 {
 	currentToken = next_token();
@@ -810,9 +778,14 @@ void parse_CASE()
 		case TOKEN_CASE:
 		{
 			fprintf(yyoutSyn, "Rule (CASE -> case KEY_VALUE : { STATEMENTS })\n");
-			match(TOKEN_CASE);
+			parse_KEY_VALUE();
+			match(TOKEN_COLON);
+			match(TOKEN_LEFT_CURLY_BRACKETS);
+			parse_STATEMENTS();
+			match(TOKEN_RIGHT_CURLY_BRACKETS);
 			break;
 		}
+
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_CASE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
@@ -820,6 +793,7 @@ void parse_CASE()
 		}
 	}
 }
+
 void parse_KEY_VALUE(){
 	currentToken = next_token();
 	switch(currentToken->kind)
@@ -881,6 +855,7 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 		case TYPE_DECLARATION:
 		case TYPE_INDICATOR:
 		case STRUCTURE_TYPE:
+		case ENUM_TYPE:
 		{
 			switch(kind)
 			{
@@ -904,9 +879,6 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 		}
 
 		case SIZE:
-		case EXPRESSION:
-		case EXPRASSION_NEW:
-		case SIMPLE_EXPRASSION:
 		{
 			switch(kind)
 			{
@@ -914,19 +886,13 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 				default: return 0;
 			}
 		}
+	
 
-		case ENUM_TYPE:
-		{
-			switch(kind)
-			{
-				case TOKEN_STRUCT: return 1;
-				default: return 0;
-			}
-		}
 
 		case ID_LIST:
 		case ID_LIST_NEW:
 		case FIELDS:
+		case FIELDS_NEW:
 		{
 			switch(kind)
 			{
@@ -935,7 +901,6 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 			}
 		}
 
-		case FIELDS_NEW:
 		case CASE_LIST:
 		case CASE_LIST_NEW:
 		{
@@ -950,7 +915,7 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 		{
 			switch(kind)
 			{
-				case TOKEN_RIGHT_BRACKETS:
+				case TOKEN_RIGHT_CURLY_BRACKETS:
 				case TOKEN_SEMICOLON: return 1;
 				default: return 0;
 			}
@@ -981,12 +946,58 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 		case VAR_ELEMENT:
 		case VAR_ELEMENT_NEW:
 		case FIELD_ACCESS:
-		case KEY:
+		case FIELD_ACCESS_NEW:
 		{
 			switch(kind)
 			{
 				case TOKEN_ASSIGNMENT:
-				case TOKEN_RIGHT_BRACKETS: return 1;
+				case TOKEN_RIGHT_BRACKETS:
+				case TOKEN_RIGHT_PARENTHESES:
+				case TOKEN_RIGHT_CURLY_BRACKETS:
+				case TOKEN_SEMICOLON:
+				case TOKEN_KEYWORD_END:
+				case TOKEN_AR_OP_ADD:
+				case TOKEN_AR_OP_SUB:
+				case TOKEN_AR_OP_MULTI:		
+				case TOKEN_AR_OP_DIVIDE: return 1;
+				default: return 0;
+			}
+		}
+		
+		case KEY:
+		{
+			switch(kind)
+			{
+				case TOKEN_RIGHT_PARENTHESES: return 1;
+				default: return 0;
+			}
+		}
+
+		case EXPRESSION:
+		case EXPRASSION_NEW:
+		{
+			switch(kind)
+			{
+				case TOKEN_SEMICOLON:
+				case TOKEN_KEYWORD_END:
+				case TOKEN_RIGHT_BRACKETS:
+				case TOKEN_RIGHT_CURLY_BRACKETS: return 1;
+				default: return 0;
+			}
+		}
+
+		case SIMPLE_EXPRASSION:
+		{
+			switch(kind)
+			{
+				case TOKEN_SEMICOLON:
+				case TOKEN_KEYWORD_END:
+				case TOKEN_RIGHT_BRACKETS:
+				case TOKEN_RIGHT_CURLY_BRACKETS:
+				case TOKEN_AR_OP_ADD:
+				case TOKEN_AR_OP_SUB:
+				case TOKEN_AR_OP_MULTI:
+				case TOKEN_AR_OP_DIVIDE: return 1;
 				default: return 0;
 			}
 		}
@@ -1009,7 +1020,6 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 				default: return 0;
 			}
 		}
-
 		
 
 
