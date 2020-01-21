@@ -739,7 +739,6 @@ void parse_CASE_LIST()
 			fprintf(yyoutSyn, "Rule (CASE_LIST -> CASE CASE_LIST_NEW)\n");
 			parse_CASE();
 			parse_CASE_LIST_NEW();
-			break;
 }
 
 void parse_CASE_LIST_NEW(){

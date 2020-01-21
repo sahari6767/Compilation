@@ -26,6 +26,7 @@ typedef enum Grammer
         VAR_ELEMENT,
         VAR_ELEMENT_NEW,
         FIELD_ACCESS,
+        FIELD_ACCESS_NEW,
         EXPRESSION,
         EXPRASSION_NEW,
         SIMPLE_EXPRASSION,
