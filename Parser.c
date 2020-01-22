@@ -13,7 +13,6 @@ void match(eTOKENS i_ExpectedTokenKind)
 	if (currentToken->kind != i_ExpectedTokenKind)
 	{
 		fprintf(yyoutSyn, "Expected token of type {%s} at line: {%d}, Actual token of type {%s}, lexeme: {%s}\n", convertFromTokenKindToString(i_ExpectedTokenKind), currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-		back_token();
 	}
 }
 
@@ -109,17 +108,24 @@ void parse_DECLARATION()
 			parse_TYPE_DECLARATION();
 			break;
 		}
-		//21.1.20 --> No need
-		/*case TOKEN_BEGIN:
+
+		case TOKEN_BEGIN: // we added that  for test2
 		{
-			fprintf(yyoutSyn, "Rule (DECLARATION -> epsilon)\n");
-			back_token();
+			currentToken = back_token();
+			if (currentToken->kind != TOKEN_BLOCK)
+			{
+				fprintf(yyoutSyn, "Rule (DECLARATION -> epsilon)\n");
+			}
+			else
+			{
+				fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			}
 			break;
-		}*/
+		}
 
 		default:
 		{
-			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID, TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(DECLARATION);
 		}
 	}
@@ -441,6 +447,12 @@ void parse_STATEMENTS_NEW()
 		}
 
 		case TOKEN_KEYWORD_END:
+		{
+			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
+			back_token();
+			break;
+		}
+		
 		case TOKEN_RIGHT_CURLY_BRACKETS:
 		{
 			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
