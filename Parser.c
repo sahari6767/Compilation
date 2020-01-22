@@ -472,7 +472,6 @@ void parse_STATEMENT()
 		case TOKEN_BREAK:
 		{
 			fprintf(yyoutSyn, "Rule (STATEMENT -> break)\n");
-			match(TOKEN_BREAK);
 			break;
 		}
 		case TOKEN_SWITCH:
@@ -524,7 +523,7 @@ void parse_VAR_ELEMENT()
 			parse_VAR_ELEMENT_NEW();
 			}
 
-			else if(secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE)
+			else if(secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE)
 			{
 			fprintf(yyoutSyn, "(VAR_ELEMENT -> epsilon)\n");
 			parse_VAR_ELEMENT_NEW();
@@ -538,7 +537,7 @@ void parse_VAR_ELEMENT()
 			}
 		}
 		break;
-		
+
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
@@ -561,14 +560,33 @@ void parse_VAR_ELEMENT_NEW()
 			break;
 		}
 
-		case TOKEN_ASSIGNMENT: 
+		case TOKEN_ASSIGNMENT:
+		{
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> epsilon(=))\n");
+			back_token();
+			break;
+		}
+
+		case TOKEN_RIGHT_BRACKETS:
+		{
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> epsilon(]))\n");
+			back_token();
+			break;
+
+		}
+
+		case TOKEN_SEMICOLON:
+		{
+			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> epsilon(;))\n");
+			back_token();
+			break;
+		}
 		case TOKEN_AR_OP_ADD:  
 		case TOKEN_AR_OP_SUB:  
 		case TOKEN_AR_OP_MULTI: 
 		case TOKEN_AR_OP_DIVIDE:
 		{
 			fprintf(yyoutSyn, "(VAR_ELEMENT_NEW  -> epsilon)\n");
-			back_token();
 			break;
 		}
 		default:
@@ -589,7 +607,7 @@ void parse_FIELD_ACCESS()
 		{
 			fprintf(yyoutSyn, "(FIELD_ACCESS  -> id.FIELD_ACCESS)\n");
 			match(TOKEN_DOT);
-			parse_FIELD_ACCESS();
+			parse_FIELD_ACCESS_NEW();
 			break;
 		}
 		/*21.1.20 --> No need
@@ -674,6 +692,14 @@ void parse_EXPRASSION_NEW()
 		case TOKEN_AR_OP_DIVIDE:
 		{
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_DIVIDE EXPRESSION)\n");
+			parse_EXPRESSION();
+			break;
+		}
+
+		case TOKEN_ID:
+		{
+			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon(ID))\n");
+			back_token();
 			parse_EXPRESSION();
 			break;
 		}
