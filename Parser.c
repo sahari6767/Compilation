@@ -108,7 +108,7 @@ void parse_DECLARATION()
 			parse_TYPE_DECLARATION();
 			break;
 		}
-
+/*
 		case TOKEN_BEGIN: // we added that  for test2
 		{
 			currentToken = back_token();
@@ -121,7 +121,7 @@ void parse_DECLARATION()
 				fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			}
 			break;
-		}
+		}*/
 
 		default:
 		{
@@ -293,7 +293,6 @@ void parse_TYPE_INDICATOR()
 	}
 }
 
-
 void parse_ENUM_TYPE()
 {
 	currentToken = next_token();
@@ -316,7 +315,6 @@ void parse_ENUM_TYPE()
 		}
 	}
 }
-
 
 void parse_ID_LIST()
 {
@@ -432,7 +430,6 @@ void parse_STATEMENTS()
 	parse_STATEMENTS_NEW();
 }
 
-
 void parse_STATEMENTS_NEW()
 {
 	currentToken = next_token();
@@ -448,7 +445,7 @@ void parse_STATEMENTS_NEW()
 
 		case TOKEN_KEYWORD_END:
 		{
-			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
+			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon(END))\n");
 			back_token();
 			break;
 		}
@@ -535,7 +532,7 @@ void parse_VAR_ELEMENT()
 			parse_VAR_ELEMENT_NEW();
 			}
 
-			else if(secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE)
+			else if(secondToken->kind == TOKEN_KEYWORD_END/*ADDED BY SAHAR FOR LINE 71 PROBLAM*/ || secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE)
 			{
 			fprintf(yyoutSyn, "(VAR_ELEMENT -> epsilon)\n");
 			parse_VAR_ELEMENT_NEW();
@@ -766,13 +763,11 @@ void parse_SIMPLE_EXPRASSION(){
 	}
 }
 
-
 void parse_KEY()
 {
 			fprintf(yyoutSyn, "Rule (KEY -> VAR_ELEMENT)\n");
 			parse_VAR_ELEMENT();
 }
-
 
 void parse_CASE_LIST()
 {
@@ -807,7 +802,6 @@ void parse_CASE_LIST_NEW(){
 		}
 	}
 }
-
 
 void parse_CASE()
 {
@@ -1091,7 +1085,6 @@ int isFollowOfVariable(Grammer variable, eTOKENS kind)
 	
 	}
 }
-
 
 void recoveryFromError(Grammer i_Variable)
 {
