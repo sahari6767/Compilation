@@ -1,5 +1,7 @@
+#include <string.h>
 #include "Tokens.h"
 #include "Parser.h"
+#include "SymbolTable.h"
 #define _CRT_SECURE_NO_WARNINGS
 
 extern FILE *yyoutLex, *yyoutSyn;
@@ -20,6 +22,8 @@ void match(eTOKENS i_ExpectedTokenKind)
 void mainParser()
 {
 	fprintf(yyoutSyn, "Parser starting\n");
+	resetFunctionsData();
+	countParmeters = 0;
 	parse_PROGRAM();
 	match(TOKEN_EOF);
 	fprintf(yyoutSyn, "Parser finshed\n");
@@ -38,11 +42,17 @@ void parse_BLOCK()
 	{
 		case TOKEN_BLOCK:
 		{
+			cur_table = make_table(NULL);
 			fprintf(yyoutSyn, "Rule (BLOCK -> block DECLARATIONS begin STATEMENTS end)\n");
 			parse_DECLARATIONS();
 			match(TOKEN_BEGIN);
 			parse_STATEMENTS();
 			match(TOKEN_KEYWORD_END);
+
+			/// based on Ron
+			PrintAllVariableThatNeverUsed(cur_table);///
+			cur_table = pop_table(cur_table);///
+			
 			break;
 		}
 		
@@ -110,7 +120,6 @@ void parse_DECLARATION()
 			break;
 		}
 
-
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID,TOKEN_TYPE] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
@@ -122,6 +131,7 @@ void parse_DECLARATION()
 
 void parse_VAR_DECLARATION()
 {
+	int type; /// We added for the derivation
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
@@ -129,7 +139,8 @@ void parse_VAR_DECLARATION()
 		{
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION -> id : VAR_DECLARATION_NEW)\n");
 			match(TOKEN_COLON);
-			parse_VAR_DECLARATION_NEW();
+			type = parse_SIMPLE_TYPE(); /// checking what type
+			parse_VAR_DECLARATION_NEW(type); /// the func gets 'type'
 			break;
 		}
 		default:
@@ -140,7 +151,7 @@ void parse_VAR_DECLARATION()
 	}
 }
 
-void parse_VAR_DECLARATION_NEW()
+void parse_VAR_DECLARATION_NEW(int type)
 {
 	currentToken = next_token();
 	switch (currentToken->kind)
@@ -206,27 +217,32 @@ void parse_SIZE()
 	}
 }
 
-void parse_SIMPLE_TYPE()
+int parse_SIMPLE_TYPE()
 {
+	int type;
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
 		case TOKEN_INTEGER:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> integer\n");
+			type = INTEGER;
 			break;
 		}
 		case TOKEN_REAL:
 		{
-			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> real\n"); 
+			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> real\n");
+			type = REAL;
 			break;
 		}
 		default:
 		{
-		fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER,TOKEN_REAL] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
-		recoveryFromError(SIMPLE_TYPE);
+			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER,TOKEN_REAL] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
+			recoveryFromError(SIMPLE_TYPE);
+			type = 0;
 		}
 	}
+	return type;
 }
 
 void parse_TYPE_DECLARATION()
@@ -1041,6 +1057,26 @@ void recoveryFromError(Grammer i_Variable)
 	{
 		currentToken = next_token();
 	}
-
 	back_token();
+}
+
+/// We added thate bsed on Ron
+void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
+{
+	int i = 0;
+	for (i = 0; i < HASH_ARRAY_SIZE; i++)
+	{
+		SymTableEntry *entry = current_ptr->HashingTable[i];
+		while (entry)
+		{
+			if (entry->countInstance == 0)
+			{
+				///we are not sure how the output should look like
+				fprintf(yyoutSem, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
+					entry->defineInLineNumber, entry->name);
+			}
+
+			entry = entry->next;
+		}
+	}
 }

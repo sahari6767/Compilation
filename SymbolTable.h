@@ -5,12 +5,12 @@
 // Types
 #define REAL 1
 #define INTEGER 2
-#define ARRAY 3
-#define VOID 4
+#define ARRAY 3 /// do we deed?
+#define STRUCT 4 ///
+#define ENUM 5 ///
 
 // Roles
 #define VAR 500
-#define FUNCTION 501
 
 #define HASH_ARRAY_SIZE 201
 #define FUNCTIONS_ARRAY 200
@@ -71,7 +71,7 @@ SymTableEntry* find(char *name, SymTable* current_ptr);
 void set_type(SymTableEntry* entry, int type);
 int get_type(SymTableEntry*);
 
-//--------------------------//
+//-------------We need to check what actually is needed from here down-------------//
 
 long HashFoldingFunction(char *name);
 

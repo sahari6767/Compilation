@@ -40,40 +40,40 @@ typedef enum Grammer
 void match(eTOKENS i_ExpectedTokenKind);
 void recoveryFromError(Grammer i_Variable);
 void mainParser();
-
-void parse_PROGRAM();//CHECK
-void parse_BLOCK();//CHECK
-void parse_DECLARATIONS();//CHECK
-void parse_DECLARATIONS_NEW();//CHECK
-void parse_DECLARATION();//CHECK
-void parse_VAR_DECLARATION();//CHECK
-void parse_VAR_DECLARATION_NEW();//CHECK
-void parse_SIZE();//CHECK
-void parse_SIMPLE_TYPE();//CHECK
-void parse_TYPE_DECLARATION();//CHECK
-void parse_TYPE_INDICATOR();//CHECK
-void parse_ENUM_TYPE();//CHECK
-void parse_ID_LIST();//CHECK
-void parse_ID_LIST_NEW();//CHECK
-void parse_STRUCTURE_TYPE();//CHECK
-void parse_FIELDS();//CHECK
-void parse_FIELDS_NEW();//CHECK
-void parse_FIELD();//CHECK
-void parse_STATEMENTS();//CHECK
-void parse_STATEMENT();//CHECK
-void parse_STATEMENTS_NEW();//CHECK
-void parse_VAR_ELEMENT();//CHECK
-void parse_VAR_ELEMENT_NEW();//CHECK
-void parse_FIELD_ACCESS();//CHECK
-void parse_FIELD_ACCESS_NEW();//NEW
-void parse_EXPRESSION();////check
-void parse_EXPRASSION_NEW();////check
-void parse_SIMPLE_EXPRASSION();////check
-void parse_KEY();////check
-void parse_CASE_LIST();////check
-void parse_CASE_LIST_NEW();////check
-void parse_CASE();////check
-void parse_KEY_VALUE();////check
+void parse_PROGRAM();
+void parse_BLOCK();
+void PrintAllVariableThatNeverUsed(SymTable* current_ptr) /// We added thate bsed on Ron
+void parse_DECLARATIONS();
+void parse_DECLARATIONS_NEW();
+void parse_DECLARATION();
+void parse_VAR_DECLARATION();
+void parse_VAR_DECLARATION_NEW(int type); /// the func gets type
+void parse_SIZE();
+int parse_SIMPLE_TYPE(); /// We changed to int
+void parse_TYPE_DECLARATION();
+void parse_TYPE_INDICATOR();
+void parse_ENUM_TYPE();
+void parse_ID_LIST();
+void parse_ID_LIST_NEW();
+void parse_STRUCTURE_TYPE();
+void parse_FIELDS();
+void parse_FIELDS_NEW();
+void parse_FIELD();
+void parse_STATEMENTS();
+void parse_STATEMENT();
+void parse_STATEMENTS_NEW();
+void parse_VAR_ELEMENT();
+void parse_VAR_ELEMENT_NEW();
+void parse_FIELD_ACCESS();
+void parse_FIELD_ACCESS_NEW();
+void parse_EXPRESSION();
+void parse_EXPRASSION_NEW();
+void parse_SIMPLE_EXPRASSION();
+void parse_KEY();
+void parse_CASE_LIST();
+void parse_CASE_LIST_NEW();
+void parse_CASE();
+void parse_KEY_VALUE();
 
 
 
