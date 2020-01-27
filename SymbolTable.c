@@ -1,8 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include "SymbolTable.h"
-
 #define FOLDING 2
 
 extern FILE *yyoutSem;
@@ -44,14 +42,12 @@ SymTable* make_table(SymTable* current_ptr){
 SymTableEntry* lookup(char *idName, SymTable* currentTable){
 	long index = HashFoldingFunction(idName);
 	SymTableEntry *entry = currentTable->HashingTable[index];
-
 	while (entry)
 	{
 		if (!strcmp(idName, entry->name))
 		{
 			return entry;
 		}
-		
 		entry = entry->next;
 	}
 

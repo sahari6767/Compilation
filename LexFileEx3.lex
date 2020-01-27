@@ -5,11 +5,11 @@
 #include <stdlib.h>
 #include "Tokens.h"
 #include "Parser.h"
+#include "SymbolTable.h"
 FILE *yyoutLex, *yyoutSyn;
 void error(char*,int);
 int line=1;
 %}
-
 
 DIGIT    [0-9]
 ALPHA [A-Za-z]
@@ -91,7 +91,6 @@ UNDERSCORE [_]
 
 <<EOF>>		{return Handle_token(TOKEN_EOF , yytext , line);}
 
-
 "\n"				{line++;}
 " "
 "\t"
@@ -102,13 +101,10 @@ UNDERSCORE [_]
 
 %%
 
-
-
 void error(char *lexeme ,int lineNum)
 {
 	fprintf(yyoutLex, "\nThe character {%s} at line: {%d} does not begin any legal token in the language\n\n",lexeme, lineNum);
 }
-
 
 int main()
 {
@@ -119,6 +115,8 @@ int main()
 	char* pathToExportResultFileTestLex2 =  "C:\\temp\\test2_313173213_204159784_204367387_lex.txt";
 	char* pathToExportResultFileTestSyn1 =  "C:\\temp\\test1_313173213_204159784_204367387_syntactic.txt";
 	char* pathToExportResultFileTestSyn2 =  "C:\\temp\\test2_313173213_204159784_204367387_syntactic.txt";
+	char* pathToExportResultFileTestSyn1 =  "C:\\temp\\test1_313173213_204159784_204367387_semantic.txt";
+	char* pathToExportResultFileTestSyn2 =  "C:\\temp\\test2_313173213_204159784_204367387_semantic.txt";
 	eTOKENS kind;
 	line = 1;
 	
@@ -134,9 +132,11 @@ int main()
 		/* file is open */
 		yyoutLex = fopen(pathToExportResultFileTestLex1 ,"w");
 		yyoutSyn = fopen(pathToExportResultFileTestSyn1 ,"w");
+		yyoutSem = fopen(pathToExportResultFileTestSem1 ,"w");
 		mainParser();
 		printf("Done! see result on C:\\temp\\test1_313173213_204159784_204367387_lex.txt\n");
 		printf("Done! see result on C:\\temp\\test1_313173213_204159784_204367387_syntactic.txt\n");
+		printf("Done! see result on C:\\temp\\test1_313173213_204159784_204367387_semantic.txt\n");
 	}
 	
 	/* Close file */
@@ -169,9 +169,11 @@ int main()
 		/* file is open */
 		yyoutLex = fopen(pathToExportResultFileTestLex2 ,"w");
 		yyoutSyn = fopen(pathToExportResultFileTestSyn2 ,"w");
+		yyoutSem = fopen(pathToExportResultFileTestSem2 ,"w");
 		mainParser();
 		printf("Done! see result on C:\\temp\\test2_313173213_204159784_204367387_lex.txt\n");
 		printf("Done! see result on C:\\temp\\test2_313173213_204159784_204367387_syntactic.txt\n");
+		printf("Done! see result on C:\\temp\\test2_313173213_204159784_204367387_semantic.txt\n");
 	}
 
 	/* Close file */
@@ -188,6 +190,11 @@ int main()
 	if(yyoutSyn)
 	{
 		fclose (yyoutSyn);
+	}
+
+	if(yyoutSem)
+	{
+		fclose (yyoutSem);
 	}
 
 	freeMemoryTokens(); /* Release memory allocation */
