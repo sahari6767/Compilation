@@ -33,12 +33,12 @@ typedef struct ErrorExpression{
 
 typedef struct SymTableEntry{
 	char *name;
-	int size;
-	int countInstance;
+	int size;///
+	int countInstance;///
 	int roleType;
 	int type;
-	int subType;
-	int defineInLineNumber;
+	int subType;/// We dont have long...etc as Ron
+	int defineInLineNumber;///
 	ErrorExpression errorsExpressions[ERROR_TYPES];
 	struct SymTableEntry *next;
 }SymTableEntry;
