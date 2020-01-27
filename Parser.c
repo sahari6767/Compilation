@@ -14,6 +14,7 @@ void match(eTOKENS i_ExpectedTokenKind)
 	{
 		fprintf(yyoutSyn, "Expected token of type {%s} at line: {%d}, Actual token of type {%s}, lexeme: {%s}\n", convertFromTokenKindToString(i_ExpectedTokenKind), currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 	}
+	
 }
 
 void mainParser()
