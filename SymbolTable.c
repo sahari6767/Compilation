@@ -8,8 +8,7 @@
 extern FILE *yyoutSem;
 
 // Use folding on a string, summed 2 bytes at a time (copy with changes from: https://research.cs.vt.edu/AVresearch/hashing/strings.php)
-long HashFoldingFunction(char *TokenIdName)
-{
+long HashFoldingFunction(char *TokenIdName){
 	int intLength = strlen(TokenIdName) / FOLDING;
 	long sum = 0;
 	char c[FOLDING];
@@ -31,8 +30,7 @@ long HashFoldingFunction(char *TokenIdName)
 	return((abs(sum)) % HASH_ARRAY_SIZE);
 }
 
-SymTable* make_table(SymTable* current_ptr)
-{
+SymTable* make_table(SymTable* current_ptr){
 	SymTable *SymbolTable = (SymTable*)malloc(sizeof(SymTable));
 	SymbolTable->father = current_ptr; // connect between the tables
 	for (int i = 0; i < HASH_ARRAY_SIZE; i++)
@@ -43,8 +41,7 @@ SymTable* make_table(SymTable* current_ptr)
 	return SymbolTable;
 }
 
-SymTableEntry* lookup(char *idName, SymTable* currentTable)
-{
+SymTableEntry* lookup(char *idName, SymTable* currentTable){
 	long index = HashFoldingFunction(idName);
 	SymTableEntry *entry = currentTable->HashingTable[index];
 
@@ -61,8 +58,7 @@ SymTableEntry* lookup(char *idName, SymTable* currentTable)
 	return NULL;
 }
 
-SymTableEntry* find(char *IdNameToFind, SymTable* current_table)
-{
+SymTableEntry* find(char *IdNameToFind, SymTable* current_table){
 	SymTableEntry *entry;
 	while (current_table)
 	{
@@ -76,8 +72,7 @@ SymTableEntry* find(char *IdNameToFind, SymTable* current_table)
 }
 
 // insert variable / func to symbol table (return NULL in case that the already in the table)
-SymTableEntry* insert(char *TokenIdName, SymTable* currentTable)
-{
+SymTableEntry* insert(char *TokenIdName, SymTable* currentTable){
 
 	long index = HashFoldingFunction(TokenIdName);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
@@ -119,70 +114,58 @@ SymTableEntry* insert(char *TokenIdName, SymTable* currentTable)
 	return (*entry);
 }
 
-SymTable* pop_table(SymTable* currentTable)
-{
+SymTable* pop_table(SymTable* currentTable){
 	return currentTable->father;
 }
 
-void set_size(SymTableEntry* currentEntry, int size)
-{
+void set_size(SymTableEntry* currentEntry, int size){
 	if (currentEntry != NULL)
 		currentEntry->size = size;
 }
 
-int get_size(SymTableEntry* currentEntry)
-{
+int get_size(SymTableEntry* currentEntry){
 	return currentEntry->size;
 }
 
-void set_type(SymTableEntry* currentEntry, int type)
-{
+void set_type(SymTableEntry* currentEntry, int type){
 	if (currentEntry != NULL)
 		currentEntry->type = type;
 }
 
-int get_type(SymTableEntry* currentEntry)
-{
+int get_type(SymTableEntry* currentEntry){
 	return currentEntry->type;
 }
 
-void set_roleType(SymTableEntry* currentEntry, int roleType)
-{
+void set_roleType(SymTableEntry* currentEntry, int roleType){
 	if (currentEntry != NULL)
 		currentEntry->roleType = roleType;
 }
-int get_roleType(SymTableEntry* currentEntry)
-{
+
+int get_roleType(SymTableEntry* currentEntry){
 	return currentEntry->roleType;
 }
 
-
-void set_subType(SymTableEntry* currentEntry, int idsub)
-{
+void set_subType(SymTableEntry* currentEntry, int idsub){
 	if (currentEntry != NULL)
 		currentEntry->subType = idsub;
 }
-int get_subType(SymTableEntry* currentEntry)
-{
+
+int get_subType(SymTableEntry* currentEntry){
 	return currentEntry->subType;
 }
 
-
-void setLineNumber(SymTableEntry* currentEntry, int lineNumber)
-{
+void setLineNumber(SymTableEntry* currentEntry, int lineNumber){
 	if (currentEntry != NULL)
 		currentEntry->defineInLineNumber = lineNumber;
 }
 
-void setError(int error, int lineNumber, char* variableName)
-{
+void setError(int error, int lineNumber, char* variableName){
 	cur_entry->errorsExpressions[error].error = error;
 	cur_entry->errorsExpressions[error].lineNumber = lineNumber;
 	cur_entry->errorsExpressions[error].variableName = variableName;
 }
 
-void printErrors(int lineNumber)
-{
+void printErrors(int lineNumber){
 	int i;
 	if (cur_entry)
 	{
@@ -219,8 +202,7 @@ void printErrors(int lineNumber)
 	}
 }
 
-void resetFunctionsData()
-{
+void resetFunctionsData(){
 	index = 0;
 	variableIndex = 0;
 	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
@@ -236,8 +218,7 @@ void resetFunctionsData()
 	}
 }
 
-int ifFunctionExist(char* name)
-{
+int ifFunctionExist(char* name){
 	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
 	{
 		if (funcArray[i].name)
@@ -253,8 +234,7 @@ int ifFunctionExist(char* name)
 	return 0; // not found
 }
 
-void howMuchVariables()
-{
+void howMuchVariables(){
 	int count = 0;
 	SymTableEntry *entry;
 	if (cur_table)
@@ -279,8 +259,7 @@ void howMuchVariables()
 	funcArray[index].totalVariables = count;
 }
 
-int isIdExistInFunction(char *name)
-{
+int isIdExistInFunction(char *name){
 	for (int i = 0; i < FUNCTIONS_VARIABLES_ARRAY; i++)
 	{
 		if (strcmp(funcArray[index].variables[i], name) == 0)
@@ -292,8 +271,7 @@ int isIdExistInFunction(char *name)
 	return 0;
 }
 
-int findFunction(char* name)
-{
+int findFunction(char* name){
 	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
 	{
 		if (strcmp(funcArray[i].name, name) == 0)
@@ -305,8 +283,7 @@ int findFunction(char* name)
 	return 0;
 }
 
-int getIndexFunction(char* name)
-{
+int getIndexFunction(char* name){
 	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
 	{
 		if (strcmp(funcArray[i].name, name) == 0)
