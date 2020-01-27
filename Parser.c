@@ -45,7 +45,6 @@ void parse_BLOCK()
 			match(TOKEN_KEYWORD_END);
 			break;
 		}
-		
 		default:
 		{
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_BLOCK] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
