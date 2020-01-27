@@ -42,14 +42,12 @@ SymTable* make_table(SymTable* current_ptr){
 SymTableEntry* lookup(char *idName, SymTable* currentTable){
 	long index = HashFoldingFunction(idName);
 	SymTableEntry *entry = currentTable->HashingTable[index];
-
 	while (entry)
 	{
 		if (!strcmp(idName, entry->name))
 		{
 			return entry;
 		}
-		
 		entry = entry->next;
 	}
 
