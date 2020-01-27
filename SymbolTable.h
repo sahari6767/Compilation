@@ -2,7 +2,6 @@
 #include <string.h>
 #include <math.h>
 
-
 // Types
 #define REAL 1
 #define INTEGER 2
@@ -18,24 +17,21 @@
 #define FUNCTIONS_VARIABLES_ARRAY 50
 #define ERROR_TYPES 6
 
-typedef enum eErrorTypes
-{
+typedef enum eErrorTypes{
 	REAL_TO_INTEGER = 1,
 	RIGHT_VARIABLE_UNDEFINED,
 	ARRAY_INDEX_OUT_OF_RANGE,
 	USING_ARRAY_WITHOUT_SQUARE_BRACKET,
 	DIVIDED_BY_ZERO
-
 }eErrorTypes;
 
-typedef struct ErrorExpression
-{
+typedef struct ErrorExpression{
 	int lineNumber;
 	char* variableName;
 	enum eErrorTypes error;
 }ErrorExpression;
 
-typedef struct SymTableEntry {
+typedef struct SymTableEntry{
 	char *name;
 	int size;
 	int countInstance;
@@ -47,7 +43,7 @@ typedef struct SymTableEntry {
 	struct SymTableEntry *next;
 }SymTableEntry;
 
-typedef struct FunctionCell {
+typedef struct FunctionCell{
 	char *name;
 	char* variables[FUNCTIONS_VARIABLES_ARRAY];
 	int returnType;
@@ -55,8 +51,7 @@ typedef struct FunctionCell {
 	int totalVariables;
 }FunctionCell;
 
-
-typedef struct SymTable {
+typedef struct SymTable{
 	SymTableEntry *HashingTable[HASH_ARRAY_SIZE];
 	struct SymTable *father;
 }SymTable;
@@ -67,16 +62,18 @@ FunctionCell funcArray[FUNCTIONS_ARRAY];
 int index;
 int variableIndex;
 
-
 SymTable* make_table(SymTable* current_ptr);
 SymTable* pop_table(SymTable* current_tab);
 SymTableEntry* insert(char *name, SymTable* current_ptr);
-SymTableEntry* find(char *name, SymTable* current_ptr);
 SymTableEntry* lookup(char *name, SymTable* current_ptr);
-long HashFoldingFunction(char *name);
+SymTableEntry* find(char *name, SymTable* current_ptr);
 
 void set_type(SymTableEntry* entry, int type);
 int get_type(SymTableEntry*);
+
+//--------------------------//
+
+long HashFoldingFunction(char *name);
 
 void set_roleType(SymTableEntry*, int roleType);
 int get_roleType(SymTableEntry*);
