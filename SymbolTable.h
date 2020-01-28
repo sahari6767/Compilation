@@ -2,19 +2,17 @@
 #include <string.h>
 #include <math.h>
 
-// Types
+// VAR Types
 #define REAL 1
 #define INTEGER 2
-#define ARRAY 3 /// do we deed?
-#define STRUCT 4 ///
-#define ENUM 5 ///
+#define ARRAY 3 
 
 // Roles
 #define VAR 500
+#define STRUCT  
+#define ENUM  
 
 #define HASH_ARRAY_SIZE 201
-#define FUNCTIONS_ARRAY 200
-#define FUNCTIONS_VARIABLES_ARRAY 50
 #define ERROR_TYPES 6
 
 typedef enum eErrorTypes{

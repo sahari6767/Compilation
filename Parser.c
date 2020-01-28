@@ -138,7 +138,6 @@ void parse_VAR_DECLARATION()
 		case TOKEN_ID:
 		{
 			char *var_name = copy_lexeme(currentToken -> lexeme);
-
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION -> id : VAR_DECLARATION_NEW)\n");
 			match(TOKEN_COLON);
 			/*type = parse_SIMPLE_TYPE(); /// checking what type // //// Sahar putted on comment
@@ -170,19 +169,27 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	{
 		case TOKEN_INTEGER:
 		{
-			int var_length = strlen(var_name);
 			// todo: value and one other attribute
 			// Insert int to table
-			SymTableEntry *entry = insertToSymbolTable(var_name, var_length,)
+			type = INTEGER;
+			cur_entry = insert(var_name, cur_table);
+			if(cur_entry == NULL)
+			{
+				fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: '%s' Function can't have a local variable with the same name as its parameter\n", "C016",
+					currentToken->lineNumber, currentToken->lexeme);
+			}
+			set_type(cur_entry, type);
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
-			parse_SIMPLE_TYPE();
+			parse_SIMPLE_TYPE();	
 			break;
 		}
 	
 		case TOKEN_REAL:
 		{
 			// Insert real to table
+			type = REAL;
+			cur_entry = insert(var_name, type, cur_table)
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -191,6 +198,8 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_ARRAY:
 		{
+			type = ARRAY;
+			cur_entry = insert(var_name, type, cur_table)
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> array [SIZE] of SIMPLE_TYPE)\n"); 
 			match(TOKEN_LEFT_BRACKETS);
 			parse_SIZE();
