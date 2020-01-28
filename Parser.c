@@ -131,16 +131,19 @@ void parse_DECLARATION()
 
 void parse_VAR_DECLARATION()
 {
-	int type; /// We added for the derivation
+	//int type; /// We added for the derivation //// Sahar putted on comment
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
 		case TOKEN_ID:
 		{
+			char *var_name = copy_lexeme(currentToken -> lexeme);
+
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION -> id : VAR_DECLARATION_NEW)\n");
 			match(TOKEN_COLON);
-			type = parse_SIMPLE_TYPE(); /// checking what type
-			parse_VAR_DECLARATION_NEW(type); /// the func gets 'type'
+			/*type = parse_SIMPLE_TYPE(); /// checking what type // //// Sahar putted on comment
+			parse_VAR_DECLARATION_NEW(type);*/ /// the func gets 'type' //// Sahar putted on comment
+			parse_VAR_DECLARATION_NEW(var_name);
 			break;
 		}
 		default:
@@ -151,13 +154,26 @@ void parse_VAR_DECLARATION()
 	}
 }
 
-void parse_VAR_DECLARATION_NEW(int type)
+char *copy_lexeme(char *string_to_copy) {
+	int var_name_len = strlen(string_to_copy);
+	*char var_name = (char *) malloc(sizeof(char) * var_name_len);
+	strcpy_s(var_name, var_name_len, string_to_copy);
+	return var_name;
+}
+
+/*void parse_VAR_DECLARATION_NEW(int type)*/ //// Sahar putted on comment
+void parse_VAR_DECLARATION_NEW(char *var_name)
 {
+	int type;
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
 		case TOKEN_INTEGER:
 		{
+			int var_length = strlen(var_name);
+			// todo: value and one other attribute
+			// Insert int to table
+			SymTableEntry *entry = insertToSymbolTable(var_name, var_length,)
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -166,6 +182,7 @@ void parse_VAR_DECLARATION_NEW(int type)
 	
 		case TOKEN_REAL:
 		{
+			// Insert real to table
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -196,6 +213,16 @@ void parse_VAR_DECLARATION_NEW(int type)
 		}
 	}
 }
+
+SymTableEntry * insertIntegerVarToSymbolTable(char *var_name, int value) {
+
+}
+
+SymTableEntry * insertRealVarToSymbolTable(char *var_name, float value) {
+
+}
+
+SymT
 
 void parse_SIZE()
 {
