@@ -77,6 +77,7 @@ SymTableEntry* insert(char *TokenIdName, SymTable* currentTable){
 		*entry = (SymTableEntry*)malloc(sizeof(SymTableEntry));
 		(*entry)->name = (char*)malloc(sizeof(char) * strlen(TokenIdName));
 		strcpy((*entry)->name, TokenIdName);
+        (*entry) -> type = (char )
 		(*entry)->next = NULL;
 		(*entry)->countInstance = 0;
 		(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
