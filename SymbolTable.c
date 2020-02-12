@@ -6,15 +6,15 @@
 extern FILE *yyoutSem;
 
 // Use folding on a string, summed 2 bytes at a time (copy with changes from: https://research.cs.vt.edu/AVresearch/hashing/strings.php)
-long HashFoldingFunction(char *TokenIdName){
-	int intLength = strlen(TokenIdName) / FOLDING;
+long HashFoldingFunction(char *var_name){
+	int intLength = strlen(var_name) / FOLDING;
 	long sum = 0;
 	char c[FOLDING];
 
 	for (int j = 0; j < intLength; j++)
 	{
 		long mult = 1;
-		strncpy(c, TokenIdName + j * FOLDING, FOLDING);
+		strncpy(c, var_name + j * FOLDING, FOLDING);
 		for (int k = 0; k < FOLDING; k++)
 		{
 			sum += c[k] * mult;
@@ -22,8 +22,8 @@ long HashFoldingFunction(char *TokenIdName){
 		}
 	}
 
-	if ((strlen(TokenIdName) % 2) != 0)
-		sum += TokenIdName[strlen(TokenIdName) - 1];
+	if ((strlen(var_name) % 2) != 0)
+		sum += var_name[strlen(var_name) - 1];
 
 	return((abs(sum)) % HASH_ARRAY_SIZE);
 }
@@ -50,7 +50,6 @@ SymTableEntry* lookup(char *idName, SymTable* currentTable){
 		}
 		entry = entry->next;
 	}
-
 	return NULL;
 }
 
@@ -68,18 +67,17 @@ SymTableEntry* find(char *IdNameToFind, SymTable* current_table){
 }
 
 // insert variable / func to symbol table (return NULL in case that the already in the table)
-SymTableEntry* insert(char *TokenIdName, SymTable* currentTable){
+SymTableEntry* insert(char *var_name, int var_type, int size, SymTable* currentTable){
 
-	long index = HashFoldingFunction(TokenIdName);
+	long index = HashFoldingFunction(var_name);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
 	if (!(*entry))
 	{
-		*entry = (SymTableEntry*)malloc(sizeof(SymTableEntry));
-		(*entry)->name = (char*)malloc(sizeof(char) * strlen(TokenIdName));
-		strcpy((*entry)->name, TokenIdName);
-        (*entry) -> type = (char )
+		*entry = (SymTableEntry*) malloc(sizeof(SymTableEntry));
+		(*entry)->name = (char*) malloc(sizeof(char) * strlen(var_name));
+		strcpy((*entry)->name, var_name);
+        (*entry) -> type = var_type
 		(*entry)->next = NULL;
-		(*entry)->countInstance = 0;
 		(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 		(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
 		return *entry;
@@ -88,7 +86,7 @@ SymTableEntry* insert(char *TokenIdName, SymTable* currentTable){
 	while ((*entry)->next)
 	{
 		// that for the case that the index contain more then one ID then need to check on the entire list
-		if (!strcmp(TokenIdName, (*entry)->name))
+		if (!strcmp(var_name, (*entry)->name))
 		{	
 			return NULL;
 		}
@@ -96,18 +94,18 @@ SymTableEntry* insert(char *TokenIdName, SymTable* currentTable){
 		*entry = (*entry)->next;
 	}
 
-	if (!strcmp(TokenIdName, (*entry)->name))
+	if (!strcmp(var_name, (*entry)->name))
 	{
 		return NULL;
 	}
 
 	(*entry) = (SymTableEntry*)malloc(sizeof(SymTableEntry));
-	(*entry)->name = (char*)malloc(sizeof(char)*strlen(TokenIdName));
-	strcpy((*entry)->name, TokenIdName);
+	(*entry)->name = (char*)malloc(sizeof(char)*strlen(var_name));
+	strcpy((*entry)->name, var_name);
 	(*entry)->next = NULL;
 	(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 	(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
-	(*entry)->countInstance = 0;
+	(*entry)->numInstances = 0;
 	return (*entry);
 }
 
@@ -140,15 +138,6 @@ void set_roleType(SymTableEntry* currentEntry, int roleType){
 
 int get_roleType(SymTableEntry* currentEntry){
 	return currentEntry->roleType;
-}
-
-void set_subType(SymTableEntry* currentEntry, int idsub){
-	if (currentEntry != NULL)
-		currentEntry->subType = idsub;
-}
-
-int get_subType(SymTableEntry* currentEntry){
-	return currentEntry->subType;
 }
 
 void setLineNumber(SymTableEntry* currentEntry, int lineNumber){
@@ -198,98 +187,3 @@ void printErrors(int lineNumber){
 		}
 	}
 }
-
-void resetFunctionsData(){
-	index = 0;
-	variableIndex = 0;
-	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
-	{
-		funcArray[i].lineNumber = 0;
-		funcArray[i].name = "";
-		funcArray[i].returnType = -1;
-		funcArray[i].totalVariables = 0;
-		for (int j = 0; j < FUNCTIONS_VARIABLES_ARRAY; j++)
-		{
-			funcArray[i].variables[j] = "";
-		}
-	}
-}
-
-int ifFunctionExist(char* name){
-	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
-	{
-		if (funcArray[i].name)
-		{
-			if (!strcmp(funcArray[i].name, name))
-			{
-				return 1; // found
-			}
-		}
-
-	}
-
-	return 0; // not found
-}
-
-void howMuchVariables(){
-	int count = 0;
-	SymTableEntry *entry;
-	if (cur_table)
-	{
-		for (int i = 0; i < HASH_ARRAY_SIZE; i++)
-		{
-			entry = cur_table->HashingTable[i];
-			while (entry)
-			{
-				if (entry)
-				{
-					count++;
-					funcArray[index].variables[variableIndex] = entry->name;
-					variableIndex++;
-					entry = entry->next;
-				}
-				
-			}
-		}
-	}
-	variableIndex = 0;
-	funcArray[index].totalVariables = count;
-}
-
-int isIdExistInFunction(char *name){
-	for (int i = 0; i < FUNCTIONS_VARIABLES_ARRAY; i++)
-	{
-		if (strcmp(funcArray[index].variables[i], name) == 0)
-		{
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-int findFunction(char* name){
-	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
-	{
-		if (strcmp(funcArray[i].name, name) == 0)
-		{
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
-int getIndexFunction(char* name){
-	for (int i = 0; i < FUNCTIONS_ARRAY; i++)
-	{
-		if (strcmp(funcArray[i].name, name) == 0)
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-

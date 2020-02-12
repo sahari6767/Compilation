@@ -3,19 +3,14 @@
 #include <math.h>
 
 // Types
-#define REAL 1
-#define INTEGER 2
-#define ARRAY 3 /// do we deed?
-#define STRUCT 4 ///
-#define ENUM 5 ///
+#define TYPE_REAL 1
+#define TYPE_INTEGER 2
+#define TYPE_ARRAY 3
 
 // Roles
-#define VAR 500
-
-#define HASH_ARRAY_SIZE 201
-#define FUNCTIONS_ARRAY 200
-#define FUNCTIONS_VARIABLES_ARRAY 50
-#define ERROR_TYPES 6
+#define ROLE_VAR 100
+#define ROLE_ENUM 101
+#define ROLE_STRUCT 102
 
 typedef enum eErrorTypes{
 	REAL_TO_INTEGER = 1,
@@ -33,23 +28,14 @@ typedef struct ErrorExpression{
 
 typedef struct SymTableEntry{
 	char *name;
-	int size;///
-	int countInstance;///
+	int size;
+    int numInstances;
 	int roleType;
 	int type;
-	int subType;/// We dont have long...etc as Ron
-	int defineInLineNumber;///
+	int defineInLineNumber; // todo Maybe move to error
 	ErrorExpression errorsExpressions[ERROR_TYPES];
 	struct SymTableEntry *next;
 }SymTableEntry;
-
-typedef struct FunctionCell{
-	char *name;
-	char* variables[FUNCTIONS_VARIABLES_ARRAY];
-	int returnType;
-	int lineNumber;
-	int totalVariables;
-}FunctionCell;
 
 typedef struct SymTable{
 	SymTableEntry *HashingTable[HASH_ARRAY_SIZE];
@@ -71,15 +57,10 @@ SymTableEntry* find(char *name, SymTable* current_ptr);
 void set_type(SymTableEntry* entry, int type);
 int get_type(SymTableEntry*);
 
-//-------------We need to check what actually is needed from here down-------------//
-
 long HashFoldingFunction(char *name);
 
 void set_roleType(SymTableEntry*, int roleType);
 int get_roleType(SymTableEntry*);
-
-void set_subType(SymTableEntry*, int);
-int get_subType(SymTableEntry*);
 
 void set_size(SymTableEntry*, int size);
 int get_size(SymTableEntry*);
@@ -88,9 +69,3 @@ void setLineNumber(SymTableEntry* entry, int lineNumber);
 
 void setError(int error, int line, char* VariableName);
 void printErrors(int);
-
-int ifFunctionExist(char* name);
-void resetFunctionsData();
-int getIndexFunction(char* name);
-int findFunction(char* name);
-int isIdExistInFunction(char *name);

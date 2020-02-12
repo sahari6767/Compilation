@@ -8,6 +8,7 @@ extern FILE *yyoutLex, *yyoutSyn;
 extern Node* currentNode;
 extern Node* headNode;
 Token *currentToken;
+SymTable *currentTable;
 
 void match(eTOKENS i_ExpectedTokenKind)
 {
@@ -49,9 +50,9 @@ void parse_BLOCK()
 			parse_STATEMENTS();
 			match(TOKEN_KEYWORD_END);
 
-			/// based on Ron
-			PrintAllVariableThatNeverUsed(cur_table);///
-			cur_table = pop_table(cur_table);///
+			// Pop table
+			PrintAllVariableThatNeverUsed(cur_table);
+			cur_table = pop_table(cur_table);
 			
 			break;
 		}
@@ -161,19 +162,14 @@ char *copy_lexeme(char *string_to_copy) {
 	return var_name;
 }
 
-/*void parse_VAR_DECLARATION_NEW(int type)*/ //// Sahar putted on comment
 void parse_VAR_DECLARATION_NEW(char *var_name)
 {
-	int type;
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
 		case TOKEN_INTEGER:
 		{
-			int var_length = strlen(var_name);
-			// todo: value and one other attribute
-			// Insert int to table
-			SymTableEntry *entry = insertToSymbolTable(var_name, var_length,)
+		    entry = insert(var_name, INTEGER_TYPE, cur_table)
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -182,8 +178,7 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_REAL:
 		{
-			// Insert real to table
-			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
+		    entry = insert(var_name, REAL_TYPE, cur_table)
 			back_token();
 			parse_SIMPLE_TYPE();
 			break;
@@ -191,6 +186,8 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_ARRAY:
 		{
+		    entry = insert(var_name, ARRAY_ROLE, cur_table)
+            set_size(entry, )
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> array [SIZE] of SIMPLE_TYPE)\n"); 
 			match(TOKEN_LEFT_BRACKETS);
 			parse_SIZE();
@@ -213,16 +210,6 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 		}
 	}
 }
-
-SymTableEntry * insertIntegerVarToSymbolTable(char *var_name, int value) {
-
-}
-
-SymTableEntry * insertRealVarToSymbolTable(char *var_name, float value) {
-
-}
-
-SymT
 
 void parse_SIZE()
 {
