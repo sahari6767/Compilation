@@ -6,7 +6,7 @@
 extern FILE *yyoutSem;
 
 // Use folding on a string, summed 2 bytes at a time (copy with changes from: https://research.cs.vt.edu/AVresearch/hashing/strings.php)
-long HashFoldingFunction(char *var_name){
+long HashFoldingFunction(char *var_name) {
 	int intLength = strlen(var_name) / FOLDING;
 	long sum = 0;
 	char c[FOLDING];
@@ -28,9 +28,9 @@ long HashFoldingFunction(char *var_name){
 	return((abs(sum)) % HASH_ARRAY_SIZE);
 }
 
-SymTable* make_table(SymTable* current_ptr){
+SymTable* make_table(SymTable* current_table) {
 	SymTable *SymbolTable = (SymTable*)malloc(sizeof(SymTable));
-	SymbolTable->father = current_ptr; // connect between the tables
+	SymbolTable->father = current_table; // connect between the tables
 	for (int i = 0; i < HASH_ARRAY_SIZE; i++)
 	{
 		SymbolTable->HashingTable[i] = NULL; // init hash array
@@ -39,36 +39,12 @@ SymTable* make_table(SymTable* current_ptr){
 	return SymbolTable;
 }
 
-SymTableEntry* lookup(char *idName, SymTable* currentTable){
-	long index = HashFoldingFunction(idName);
-	SymTableEntry *entry = currentTable->HashingTable[index];
-	while (entry)
-	{
-		if (!strcmp(idName, entry->name))
-		{
-			return entry;
-		}
-		entry = entry->next;
-	}
-	return NULL;
+SymTable* pop_table(SymTable* current_table) {
+	return currentTable->father;
 }
 
-SymTableEntry* find(char *IdNameToFind, SymTable* current_table){
-	SymTableEntry *entry;
-	while (current_table)
-	{
-		if ((entry = lookup(IdNameToFind, current_table)))
-			return entry; // was found
-		else
-			current_table = pop_table(current_table); // not found in current table, find in the father table
-	}
-
-	return NULL;
-}
-
-// insert variable / func to symbol table (return NULL in case that the already in the table)
-SymTableEntry* insert(char *var_name, int var_type, int size, SymTable* currentTable){
-
+// TODO: still need to fix the insert method. Waitting for Mark's email back
+SymTableEntry insert(SymTable* current_table, char* id_name) {
 	long index = HashFoldingFunction(var_name);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
 	if (!(*entry))
@@ -109,40 +85,44 @@ SymTableEntry* insert(char *var_name, int var_type, int size, SymTable* currentT
 	return (*entry);
 }
 
-SymTable* pop_table(SymTable* currentTable){
-	return currentTable->father;
+SymTableEntry lookup(SymTable* current_table, char* id_name){
+	long index = HashFoldingFunction(idName);
+	SymTableEntry *entry = currentTable->HashingTable[index];
+	while (entry)
+	{
+		if (!strcmp(idName, entry->name)) {
+			return *entry;
+		}
+		entry = entry->next;
+	}
+	return NULL;
 }
 
-void set_size(SymTableEntry* currentEntry, int size){
-	if (currentEntry != NULL)
-		currentEntry->size = size;
+SymTableEntry find(SymTable* current_table, char* id_name){
+	SymTableEntry *entry;
+	while (current_table)
+	{
+		if ((entry = lookup(current_table, id_name))) {
+			return *entry;
+        } else {
+            // not present in this table. Check father's table.
+			current_table = pop_table(current_table);
+        }
+	}
+
+	return NULL;
 }
 
-int get_size(SymTableEntry* currentEntry){
-	return currentEntry->size;
+void set_id_type(SymTableEntry currentEntry, elm_type id_type){
+	if (currentEntry == NULL) {
+        return;
+    }
+
+    (&currentEntry) -> type = id_type;
 }
 
-void set_type(SymTableEntry* currentEntry, int type){
-	if (currentEntry != NULL)
-		currentEntry->type = type;
-}
-
-int get_type(SymTableEntry* currentEntry){
-	return currentEntry->type;
-}
-
-void set_roleType(SymTableEntry* currentEntry, int roleType){
-	if (currentEntry != NULL)
-		currentEntry->roleType = roleType;
-}
-
-int get_roleType(SymTableEntry* currentEntry){
-	return currentEntry->roleType;
-}
-
-void setLineNumber(SymTableEntry* currentEntry, int lineNumber){
-	if (currentEntry != NULL)
-		currentEntry->defineInLineNumber = lineNumber;
+elm_type get_id_type(SymTableEntry currentEntry){
+	return (&currentEntry)->type;
 }
 
 void setError(int error, int lineNumber, char* variableName){
@@ -150,6 +130,13 @@ void setError(int error, int lineNumber, char* variableName){
 	cur_entry->errorsExpressions[error].lineNumber = lineNumber;
 	cur_entry->errorsExpressions[error].variableName = variableName;
 }
+
+void setLineNumber(SymTableEntry* current_entry, int lineNumber){
+	if (currentEntry != NULL) {
+		currentEntry->defineInLineNumber = lineNumber;
+    }
+}
+
 
 void printErrors(int lineNumber){
 	int i;

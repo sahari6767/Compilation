@@ -2,45 +2,71 @@
 #include <string.h>
 #include <math.h>
 
+// Roles
+#define ROLE_VAR 100
+#define ROLE_ENUM 101
+#define ROLE_STRUCT 10
+
 // Types
+#define TYPE_NULL 0
 #define TYPE_REAL 1
 #define TYPE_INTEGER 2
 #define TYPE_ARRAY 3
 
-// Roles
-#define ROLE_VAR 100
-#define ROLE_ENUM 101
-#define ROLE_STRUCT 102
+typedef { NULL_type, integer, real } elm_type;
 
-typedef enum eErrorTypes{
+typedef struct arrayField {
+    char *fieldName;
+    struct arrayField *nextField;
+} arrayField;
+
+typedef struct structFields {
+    struct arrayField *nextField;
+} structValues;
+
+typedef struct enumValue {
+    char *enumValue;
+    struct enumValue *nextValue;
+} enumValue;
+
+typedef struct enumValues {
+    struct enumValue *nextValue;
+} enumValues;
+
+typedef struct arrayType {
+    int size;
+    int elementsType;
+} arrayType;
+
+typedef enum eErrorTypes {
 	REAL_TO_INTEGER = 1,
 	RIGHT_VARIABLE_UNDEFINED,
 	ARRAY_INDEX_OUT_OF_RANGE,
 	USING_ARRAY_WITHOUT_SQUARE_BRACKET,
 	DIVIDED_BY_ZERO
-}eErrorTypes;
+} eErrorTypes;
 
-typedef struct ErrorExpression{
+typedef struct ErrorExpression {
 	int lineNumber;
 	char* variableName;
 	enum eErrorTypes error;
-}ErrorExpression;
+} ErrorExpression;
 
-typedef struct SymTableEntry{
+typedef struct SymTableEntry {
 	char *name;
-	int size;
-    int numInstances;
 	int roleType;
 	int type;
-	int defineInLineNumber; // todo Maybe move to error
+	int size;
+    int numInstances;
+	int defineInLineNumber;
 	ErrorExpression errorsExpressions[ERROR_TYPES];
 	struct SymTableEntry *next;
-}SymTableEntry;
+} SymTableEntry;
 
-typedef struct SymTable{
+typedef struct SymTable {
 	SymTableEntry *HashingTable[HASH_ARRAY_SIZE];
 	struct SymTable *father;
-}SymTable;
+} SymTable;
 
 SymTable *cur_table;
 SymTableEntry *cur_entry;
