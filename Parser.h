@@ -42,7 +42,7 @@ void recoveryFromError(Grammer i_Variable);
 void mainParser();
 void parse_PROGRAM();
 void parse_BLOCK();
-void PrintAllVariableThatNeverUsed(SymTable* current_ptr) /// We added thate bsed on Ron
+void PrintAllVariableThatNeverUsed(SymTable* current_ptr); /// We added thate bsed on Ron
 void parse_DECLARATIONS();
 void parse_DECLARATIONS_NEW();
 void parse_DECLARATION();

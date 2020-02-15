@@ -13,7 +13,15 @@
 #define TYPE_INTEGER 2
 #define TYPE_ARRAY 3
 
-typedef { NULL_type, integer, real } elm_type;
+#define HASH_ARRAY_SIZE 201 //As Ron code(201)
+#define VAR 500
+#define FUNCTION 501
+
+#define FUNCTIONS_ARRAY 200
+#define FUNCTIONS_VARIABLES_ARRAY 50
+#define ERROR_TYPES 6
+
+typedef enum { NULL_type, integer, real } elm_type;
 
 typedef struct arrayField {
     char *fieldName;
@@ -67,6 +75,15 @@ typedef struct SymTable {
 	SymTableEntry *HashingTable[HASH_ARRAY_SIZE];
 	struct SymTable *father;
 } SymTable;
+
+//from Ron code
+typedef struct FunctionCell {
+	char* name;
+	char* variables[FUNCTIONS_VARIABLES_ARRAY];
+	int returnType;
+	int lineNumber;
+	int totalVariables;
+}FunctionCell;
 
 SymTable *cur_table;
 SymTableEntry *cur_entry;

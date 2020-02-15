@@ -4,7 +4,7 @@
 #include "SymbolTable.h"
 #define _CRT_SECURE_NO_WARNINGS
 
-extern FILE *yyoutLex, *yyoutSyn;
+extern FILE *yyoutLex, *yyoutSyn, *yyoutSem;
 extern Node* currentNode;
 extern Node* headNode;
 Token *currentToken;
@@ -24,7 +24,7 @@ void mainParser()
 {
 	fprintf(yyoutSyn, "Parser starting\n");
 	resetFunctionsData();
-	countParmeters = 0;
+	//countParmeters = 0;  Not sure what is that..
 	parse_PROGRAM();
 	match(TOKEN_EOF);
 	fprintf(yyoutSyn, "Parser finshed\n");
@@ -169,7 +169,7 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	{
 		case TOKEN_INTEGER:
 		{
-		    entry = insert(var_name, INTEGER_TYPE, cur_table)
+			cur_entry = insert(var_name, TYPE_INTEGER, cur_table);//wrote INTERGER_TYPE BEFORE
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -178,7 +178,7 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_REAL:
 		{
-		    entry = insert(var_name, REAL_TYPE, cur_table)
+			cur_entry = insert(var_name, TYPE_REAL, cur_table);//wrote REAL_TYPE BEFORE
 			back_token();
 			parse_SIMPLE_TYPE();
 			break;
@@ -186,8 +186,8 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_ARRAY:
 		{
-		    entry = insert(var_name, ARRAY_ROLE, cur_table)
-            set_size(entry, )
+			cur_entry = insert(var_name, TYPE_ARRAY, cur_table);//WROTE ARRY_ROLE
+				set_size(cur_entry, HASH_ARRAY_SIZE);
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> array [SIZE] of SIMPLE_TYPE)\n"); 
 			match(TOKEN_LEFT_BRACKETS);
 			parse_SIZE();
@@ -240,13 +240,13 @@ int parse_SIMPLE_TYPE()
 		case TOKEN_INTEGER:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> integer\n");
-			type = INTEGER;
+			type = TYPE_INTEGER;//WROTE INTERGER
 			break;
 		}
 		case TOKEN_REAL:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> real\n");
-			type = REAL;
+			type = TYPE_REAL;//WROTE REAL
 			break;
 		}
 		default:
@@ -1083,7 +1083,7 @@ void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
 		SymTableEntry *entry = current_ptr->HashingTable[i];
 		while (entry)
 		{
-			if (entry->countInstance == 0)
+			if (entry->numInstances == 0)//Changed from countInstances to numInstances
 			{
 				///we are not sure how the output should look like
 				fprintf(yyoutSem, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
