@@ -40,29 +40,29 @@ SymTable* make_table(SymTable* current_table) {
 }
 
 SymTable* pop_table(SymTable* current_table) {
-	return currentTable->father;
+	return current_table->father;
 }
 
 // TODO: still need to fix the insert method. Waitting for Mark's email back
 SymTableEntry insert(SymTable* current_table, char* id_name) {
-	long index = HashFoldingFunction(var_name);
-	SymTableEntry **entry = &(currentTable->HashingTable[index]);
+	long index = HashFoldingFunction(id_name);
+	SymTableEntry **entry = &(current_table->HashingTable[index]);
 	if (!(*entry))
 	{
 		*entry = (SymTableEntry*) malloc(sizeof(SymTableEntry));
-		(*entry)->name = (char*) malloc(sizeof(char) * strlen(var_name));
-		strcpy((*entry)->name, var_name);
+		(*entry)->name = (char*) malloc(sizeof(char) * strlen(id_name));
+		strcpy((*entry)->name, id_name);
         (*entry) -> type = var_type
 		(*entry)->next = NULL;
 		(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 		(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
-		return *entry;
+		return **entry;
 	}
 
 	while ((*entry)->next)
 	{
 		// that for the case that the index contain more then one ID then need to check on the entire list
-		if (!strcmp(var_name, (*entry)->name))
+		if (!strcmp(id_name, (*entry)->name))
 		{	
 			return NULL;
 		}
@@ -70,14 +70,14 @@ SymTableEntry insert(SymTable* current_table, char* id_name) {
 		*entry = (*entry)->next;
 	}
 
-	if (!strcmp(var_name, (*entry)->name))
+	if (!strcmp(id_name, (*entry)->name))
 	{
 		return NULL;
 	}
 
 	(*entry) = (SymTableEntry*)malloc(sizeof(SymTableEntry));
-	(*entry)->name = (char*)malloc(sizeof(char)*strlen(var_name));
-	strcpy((*entry)->name, var_name);
+	(*entry)->name = (char*)malloc(sizeof(char)*strlen(id_name));
+	strcpy((*entry)->name, id_name);
 	(*entry)->next = NULL;
 	(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 	(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
@@ -86,11 +86,11 @@ SymTableEntry insert(SymTable* current_table, char* id_name) {
 }
 
 SymTableEntry lookup(SymTable* current_table, char* id_name){
-	long index = HashFoldingFunction(idName);
-	SymTableEntry *entry = currentTable->HashingTable[index];
+	long index = HashFoldingFunction(id_name);
+	SymTableEntry *entry = current_table->HashingTable[index];
 	while (entry)
 	{
-		if (!strcmp(idName, entry->name)) {
+		if (!strcmp(id_name, entry->name)) {
 			return *entry;
 		}
 		entry = entry->next;
@@ -102,7 +102,7 @@ SymTableEntry find(SymTable* current_table, char* id_name){
 	SymTableEntry *entry;
 	while (current_table)
 	{
-		if ((entry = lookup(current_table, id_name))) {
+		if ((*entry = lookup(current_table, id_name))) {
 			return *entry;
         } else {
             // not present in this table. Check father's table.
@@ -132,8 +132,8 @@ void setError(int error, int lineNumber, char* variableName){
 }
 
 void setLineNumber(SymTableEntry* current_entry, int lineNumber){
-	if (currentEntry != NULL) {
-		currentEntry->defineInLineNumber = lineNumber;
+	if (current_entry != NULL) {
+		current_entry->defineInLineNumber = lineNumber;
     }
 }
 

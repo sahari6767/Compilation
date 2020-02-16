@@ -1,4 +1,5 @@
 #include "Tokens.h"
+#include "SymbolTable.h"
 
 typedef enum Grammer
 {
@@ -42,12 +43,12 @@ void recoveryFromError(Grammer i_Variable);
 void mainParser();
 void parse_PROGRAM();
 void parse_BLOCK();
-void PrintAllVariableThatNeverUsed(SymTable* current_ptr) /// We added thate bsed on Ron
+void PrintAllVariableThatNeverUsed(SymTable* current_ptr); /// We added thate bsed on Ron
 void parse_DECLARATIONS();
 void parse_DECLARATIONS_NEW();
 void parse_DECLARATION();
 void parse_VAR_DECLARATION();
-void parse_VAR_DECLARATION_NEW(int type); /// the func gets type
+void parse_VAR_DECLARATION_NEW(char* type); /// the func gets type
 void parse_SIZE();
 int parse_SIMPLE_TYPE(); /// We changed to int
 void parse_TYPE_DECLARATION();
@@ -74,6 +75,7 @@ void parse_CASE_LIST();
 void parse_CASE_LIST_NEW();
 void parse_CASE();
 void parse_KEY_VALUE();
+char *copy_lexeme(char *string_to_copy);
 
 
 

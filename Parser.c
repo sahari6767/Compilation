@@ -23,8 +23,6 @@ void match(eTOKENS i_ExpectedTokenKind)
 void mainParser()
 {
 	fprintf(yyoutSyn, "Parser starting\n");
-	resetFunctionsData();
-	countParmeters = 0;
 	parse_PROGRAM();
 	match(TOKEN_EOF);
 	fprintf(yyoutSyn, "Parser finshed\n");
@@ -157,7 +155,7 @@ void parse_VAR_DECLARATION()
 
 char *copy_lexeme(char *string_to_copy) {
 	int var_name_len = strlen(string_to_copy);
-	*char var_name = (char *) malloc(sizeof(char) * var_name_len);
+	char* var_name = (char *) malloc(sizeof(char) * var_name_len);
 	strcpy_s(var_name, var_name_len, string_to_copy);
 	return var_name;
 }
@@ -165,11 +163,12 @@ char *copy_lexeme(char *string_to_copy) {
 void parse_VAR_DECLARATION_NEW(char *var_name)
 {
 	currentToken = next_token();
+    SymTableEntry entry;
 	switch (currentToken->kind)
 	{
 		case TOKEN_INTEGER:
 		{
-		    entry = insert(var_name, INTEGER_TYPE, cur_table)
+		    entry = insert(cur_table, var_name);
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -178,7 +177,7 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_REAL:
 		{
-		    entry = insert(var_name, REAL_TYPE, cur_table)
+		    entry = insert(cur_table, var_name);
 			back_token();
 			parse_SIMPLE_TYPE();
 			break;
@@ -186,8 +185,8 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_ARRAY:
 		{
-		    entry = insert(var_name, ARRAY_ROLE, cur_table)
-            set_size(entry, )
+		    entry = insert(cur_table, var_name);
+            // todo: is needed? if so, where can we get the size? set_size(entry, )
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> array [SIZE] of SIMPLE_TYPE)\n"); 
 			match(TOKEN_LEFT_BRACKETS);
 			parse_SIZE();
@@ -240,13 +239,13 @@ int parse_SIMPLE_TYPE()
 		case TOKEN_INTEGER:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> integer\n");
-			type = INTEGER;
+			type = TYPE_INTEGER;
 			break;
 		}
 		case TOKEN_REAL:
 		{
 			fprintf(yyoutSyn, "Rule (SIMPLE_TYPE -> real\n");
-			type = REAL;
+			type = TYPE_REAL;
 			break;
 		}
 		default:
@@ -1083,7 +1082,7 @@ void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
 		SymTableEntry *entry = current_ptr->HashingTable[i];
 		while (entry)
 		{
-			if (entry->countInstance == 0)
+			if (entry->instances == 0)
 			{
 				///we are not sure how the output should look like
 				fprintf(yyoutSem, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",

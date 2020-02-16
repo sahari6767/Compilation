@@ -8,12 +8,13 @@
 #define ROLE_STRUCT 10
 
 // Types
-#define TYPE_NULL 0
 #define TYPE_REAL 1
 #define TYPE_INTEGER 2
 #define TYPE_ARRAY 3
 
-typedef { NULL_type, integer, real } elm_type;
+#define HASH_ARRAY_SIZE 255
+
+typedef enum elm_type { TYPE_NULL, integer, real } elm_type;
 
 typedef struct arrayField {
     char *fieldName;
@@ -59,6 +60,7 @@ typedef struct SymTableEntry {
 	int size;
     int numInstances;
 	int defineInLineNumber;
+    int instances;
 	ErrorExpression errorsExpressions[ERROR_TYPES];
 	struct SymTableEntry *next;
 } SymTableEntry;
@@ -70,15 +72,12 @@ typedef struct SymTable {
 
 SymTable *cur_table;
 SymTableEntry *cur_entry;
-FunctionCell funcArray[FUNCTIONS_ARRAY];
-int index;
-int variableIndex;
 
 SymTable* make_table(SymTable* current_ptr);
 SymTable* pop_table(SymTable* current_tab);
-SymTableEntry* insert(char *name, SymTable* current_ptr);
-SymTableEntry* lookup(char *name, SymTable* current_ptr);
-SymTableEntry* find(char *name, SymTable* current_ptr);
+SymTableEntry insert(SymTable* current_ptr, char *name);
+SymTableEntry lookup(SymTable* current_ptr, char *name);
+SymTableEntry find(SymTable* current_ptr, char *name);
 
 void set_type(SymTableEntry* entry, int type);
 int get_type(SymTableEntry*);
