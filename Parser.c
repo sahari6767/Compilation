@@ -4,7 +4,7 @@
 #include "SymbolTable.h"
 #define _CRT_SECURE_NO_WARNINGS
 
-extern FILE *yyoutLex, *yyoutSyn;
+extern FILE *yyoutLex, *yyoutSyn, *yyoutSem;
 extern Node* currentNode;
 extern Node* headNode;
 Token *currentToken;
@@ -167,6 +167,15 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 		case TOKEN_INTEGER:
 		{
 		    entry = insert(cur_table, var_name);
+		    if (entry == NULL) {
+			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
+				    currentToken->lineNumber, currentToken->lexeme);
+		    } else {
+                	set_type(cur_entry, TYPE_INTEGER);
+					set_roleType(cur_entry, ROLE_VAR);
+					setLineNumber(cur_entry, currentToken->lineNumber);
+            }
+
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
@@ -176,6 +185,16 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 		case TOKEN_REAL:
 		{
 		    entry = insert(cur_table, var_name);
+		    if (entry == NULL) {
+			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
+				    currentToken->lineNumber, currentToken->lexeme);
+		    } else {
+                	set_type(cur_entry, TYPE_REAL);
+					set_roleType(cur_entry, ROLE_VAR);
+					setLineNumber(cur_entry, currentToken->lineNumber);
+            }
+
+			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
 			back_token();
 			parse_SIMPLE_TYPE();
 			break;
@@ -184,11 +203,21 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 		case TOKEN_ARRAY:
 		{
 		    entry = insert(cur_table, var_name);
+		    if (entry == NULL) {
+			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
+				    currentToken->lineNumber, currentToken->lexeme);
+		    } else {
+					set_roleType(cur_entry, TYPE_ARRAY);
+					setLineNumber(cur_entry, currentToken->lineNumber);
+            }
+
+            // todo: print syntax rule (example: 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); )
 			match(TOKEN_LEFT_BRACKETS);
 			parse_SIZE();
 			match(TOKEN_RIGHT_BRACKETS);
 			match(TOKEN_OF);
-			parse_SIMPLE_TYPE();
+			int type = parse_SIMPLE_TYPE();
+            set_type(cur_entry, type);
 			break;
 		}
 	
@@ -410,68 +439,48 @@ void parse_FIELD()
 	parse_VAR_DECLARATION();
 }
 
-void parse_FIELDS_NEW()
-{
+void parse_FIELDS_NEW() {
 	currentToken = next_token();	
-	switch (currentToken->kind)
-	{
-		case TOKEN_SEMICOLON:
-		{
+	switch (currentToken->kind) {
+		case TOKEN_SEMICOLON: {
 			fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; FIELD FIELDS_NEW\n");
 			parse_FIELD();
 			parse_FIELDS_NEW();
 			break;	
-		}
-		case TOKEN_RIGHT_CURLY_BRACKETS:
-		{
+		} case TOKEN_RIGHT_CURLY_BRACKETS: {
 			fprintf(yyoutSyn, "Rule (FIELDS_NEW -> ; epsilon\n");
 			back_token();
 			break;
-		}
-		default:
-		{
+		} default: {
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON, TOKEN_RIGHT_CIRCLE_BRACKET] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(FIELDS_NEW);
 		}
 	}
 }
 
-void parse_STATEMENTS()
-{
+void parse_STATEMENTS() {
 	fprintf(yyoutSyn, "Rule (STATEMENTS -> STATEMENT STATEMANTS_NEW)\n");
 	parse_STATEMENT();
 	parse_STATEMENTS_NEW();
 }
 
-void parse_STATEMENTS_NEW()
-{
+void parse_STATEMENTS_NEW() {
 	currentToken = next_token();
-	switch (currentToken->kind)
-	{
-		case TOKEN_SEMICOLON:
-		{
+	switch (currentToken->kind) {
+		case TOKEN_SEMICOLON: {
 			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW ->; STATEMENT STATEMANTS_NEW)\n");
 			parse_STATEMENT();
 			parse_STATEMENTS_NEW();
 			break;
-		}
-
-		case TOKEN_KEYWORD_END:
-		{
+		} case TOKEN_KEYWORD_END: {
 			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon(END))\n");
 			back_token();
 			break;
-		}
-		
-		case TOKEN_RIGHT_CURLY_BRACKETS:
-		{
+		} case TOKEN_RIGHT_CURLY_BRACKETS: {
 			fprintf(yyoutSyn, "Rule (STATEMANTS_NEW -> epsilon)\n");
 			back_token();
 			break;
-		}
-
-		default:
-		{
+		} default: {
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_SEMICOLON,TOKEN_KEYWORD_END,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(STATEMANTS_NEW);
 		}
@@ -533,35 +542,29 @@ void parse_STATEMENT()
 void parse_VAR_ELEMENT()
 {
 	currentToken = next_token();
-	switch (currentToken->kind)
-	{
+	switch (currentToken->kind) {
+		case TOKEN_ID: {
+            // Check the ID was already declared before assignment
+            if (find(cur_table, currentToken -> lexeme) == NULL) {
+                fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable '%s' isn't defined\n", "C004",
+				currentToken->lineNumber, currentToken->lexeme);
+            }
 
-		case TOKEN_ID:
-		{
 			Token* secondToken = peek();
 			if (secondToken->kind == TOKEN_LEFT_BRACKETS )
 			{
-			fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> VAR_ELEMENT_NEW)\n");
-			parse_VAR_ELEMENT_NEW();
+			    fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> VAR_ELEMENT_NEW)\n");
+			    parse_VAR_ELEMENT_NEW();
+			} else if(secondToken->kind == TOKEN_KEYWORD_END || secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE) {
+			    fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
+			    parse_VAR_ELEMENT_NEW();
+			} else {
+			    fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> FIELD_ACCESS)\n");
+			    back_token();
+			    parse_FIELD_ACCESS();
 			}
-
-			else if(secondToken->kind == TOKEN_KEYWORD_END || secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE)
-			{
-			fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
-			parse_VAR_ELEMENT_NEW();
-			}
-			
-			else
-			{
-			fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> FIELD_ACCESS)\n");
-			back_token();
-			parse_FIELD_ACCESS();
-			}
-		}
 		break;
-
-		default:
-		{
+		} default: {
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(VAR_ELEMENT);
 		}
@@ -627,6 +630,11 @@ void parse_FIELD_ACCESS()
 	{
 		case TOKEN_ID:
 		{
+            // Check the ID was already declared before assignment   
+            if (find(cur_table, currentToken -> lexeme) == NULL) {
+                fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable '%s' isn't defined\n", "C004",
+				currentToken->lineNumber, currentToken->lexeme);
+            }
 			fprintf(yyoutSyn, "Rule (FIELD_ACCESS  -> id.FIELD_ACCESS)\n");
 			match(TOKEN_DOT);
 			parse_FIELD_ACCESS_NEW();
@@ -671,119 +679,92 @@ void parse_FIELD_ACCESS_NEW()
 	}
 }
 
-void parse_EXPRESSION()
-{
-
-			fprintf(yyoutSyn, "Rule (EXPRESSION -> SIMPLE_EXPRASSION EXPRASSION_NEW)\n");
-			parse_SIMPLE_EXPRASSION();
-			parse_EXPRASSION_NEW();
+void parse_EXPRESSION() {
+	fprintf(yyoutSyn, "Rule (EXPRESSION -> SIMPLE_EXPRASSION EXPRASSION_NEW)\n");
+	parse_SIMPLE_EXPRASSION();
+	parse_EXPRASSION_NEW();
 }
 
-void parse_EXPRASSION_NEW()
-{
+void parse_EXPRASSION_NEW() {
 	currentToken = next_token();
-	switch(currentToken->kind)
-	{
-		case TOKEN_AR_OP_ADD:
-		{
+	switch(currentToken->kind) {
+		case TOKEN_AR_OP_ADD: {
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_ADD EXPRESSION)\n");
 			parse_EXPRESSION();
 			break;
-		}
-		case TOKEN_AR_OP_SUB:
-		{
+		} case TOKEN_AR_OP_SUB: {
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_SUB EXPRESSION)\n");
 			parse_EXPRESSION();
 			break;
-		}
-		case TOKEN_AR_OP_MULTI:
-		{
+		} case TOKEN_AR_OP_MULTI: {
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_MULTI EXPRESSION)\n");
 			parse_EXPRESSION();
 			break;
-		}
-		case TOKEN_AR_OP_DIVIDE:
-		{
+		} case TOKEN_AR_OP_DIVIDE: {
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> AR_OP_DIVIDE EXPRESSION)\n");
 			parse_EXPRESSION();
 			break;
-		}
-
-		case TOKEN_ID:
-		{
+		} case TOKEN_ID: {
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon(ID))\n");
 			back_token();
 			parse_EXPRESSION();
 			break;
 		}
-
-		case TOKEN_SEMICOLON:
+        case TOKEN_SEMICOLON:
 		case TOKEN_KEYWORD_END:
 		case TOKEN_RIGHT_BRACKETS:
-		case TOKEN_RIGHT_CURLY_BRACKETS:
-		{
+		case TOKEN_RIGHT_CURLY_BRACKETS: {
 			fprintf(yyoutSyn, "Rule (EXPRASSION_NEW -> epsilon)\n");
 			back_token();
 			break;				
-		}
-
-		default:
-		{
+		} default: {
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_AR_OP_ADD, TOKEN_AR_OP_SUBL, TOKEN_AR_OP_MULTI, TOKEN_AR_OP_DIVIDE,TOKEN_SEMICOLON,OKEN_KEYWORD_END,TOKEN_RIGHT_BRACKETS,TOKEN_RIGHT_CURLY_BRACKETS] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(EXPRASSION_NEW);
 		}
 	}
 }
 
-void parse_SIMPLE_EXPRASSION(){
+void parse_SIMPLE_EXPRASSION() {
 	currentToken = next_token();
-	switch(currentToken->kind)
-	{
-		case TOKEN_REAL_NUM:
-		{
+	switch(currentToken->kind) {
+		case TOKEN_REAL_NUM: {
 			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> real_num)\n");
 			break;
-		}
-
-		case TOKEN_INTEGER_NUM:
-		{
+		} case TOKEN_INTEGER_NUM: {
 			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> int_num )\n");
 			break;
-		}
-
-		case TOKEN_ID:
-		{
+		} case TOKEN_ID: {
 			fprintf(yyoutSyn, "Rule (SIMPLE_EXPRASSION-> VAR_ELEMENT)\n");
+
+            // Make sure the VAR_ELEMENT already exists in sym table:
+            if (find(cur_table, currentToken -> lexeme) == NULL) {
+                fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable '%s' isn't defined\n", "C004",
+				currentToken->lineNumber, currentToken->lexeme);
+            }
 			back_token();
 			parse_VAR_ELEMENT();
 			break;
-		}
-
-		default:
-		{
+		} default: {
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_INTEGER_NUM, TOKEN_REAL_NUM, TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(SIMPLE_EXPRASSION);
 		}
 	}
 }
 
-void parse_KEY()
-{
-			fprintf(yyoutSyn, "Rule (KEY -> VAR_ELEMENT)\n");
-			parse_VAR_ELEMENT();
+void parse_KEY() {
+	fprintf(yyoutSyn, "Rule (KEY -> VAR_ELEMENT)\n");
+	parse_VAR_ELEMENT();
 }
 
-void parse_CASE_LIST()
-{
+void parse_CASE_LIST() {
 			fprintf(yyoutSyn, "Rule (CASE_LIST -> CASE CASE_LIST_NEW)\n");
 			parse_CASE();
 			parse_CASE_LIST_NEW();
 }
 
-void parse_CASE_LIST_NEW(){
+void parse_CASE_LIST_NEW() {
 	currentToken = next_token();
-	switch(currentToken->kind)
-	{
+	switch(currentToken->kind) {
 		case TOKEN_CASE:
 		{
 			fprintf(yyoutSyn, "Rule (CASE_LIST_NEW -> CASE CASE_LIST_NEW)\n");
@@ -842,6 +823,11 @@ void parse_KEY_VALUE(){
 		}
 		case TOKEN_ID:
 		{
+            // Check the ID was already declared before assignment   
+            if (find(cur_table, currentToken -> lexeme) == NULL) {
+                fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable '%s' isn't defined\n", "C004",
+				currentToken->lineNumber, currentToken->lexeme);
+            }
 			fprintf(yyoutSyn, "Rule (KEY_VALUE -> id)\n");
 			break;
 		}

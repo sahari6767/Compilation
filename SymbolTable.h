@@ -60,7 +60,6 @@ typedef struct SymTableEntry {
 	int roleType;
 	int type;
 	int size;
-    int numInstances;
 	int defineInLineNumber;
     int instances;
 	ErrorExpression errorsExpressions[ERROR_TYPES];

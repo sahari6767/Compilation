@@ -1,11 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <stdlib.h>
 #include "SymbolTable.h"
 #define FOLDING 2
 
 extern FILE *yyoutSem;
 
-// Use folding on a string, summed 2 bytes at a time (copy with changes from: https://research.cs.vt.edu/AVresearch/hashing/strings.php)
+// Hash function (source: https://research.cs.vt.edu/AVresearch/hashing/strings.php)
 long HashFoldingFunction(char *var_name) {
 	int intLength = strlen(var_name) / FOLDING;
 	long sum = 0;
@@ -25,14 +26,13 @@ long HashFoldingFunction(char *var_name) {
 	if ((strlen(var_name) % 2) != 0)
 		sum += var_name[strlen(var_name) - 1];
 
-	return((abs(sum)) % HASH_ARRAY_SIZE);
+	return((labs(sum)) % HASH_ARRAY_SIZE);
 }
 
 SymTable* make_table(SymTable* current_table) {
 	SymTable *SymbolTable = (SymTable*)malloc(sizeof(SymTable));
-	SymbolTable->father = current_table; // connect between the tables
-	for (int i = 0; i < HASH_ARRAY_SIZE; i++)
-	{
+	SymbolTable->father = current_table; // set the father of the new table
+	for (int i = 0; i < HASH_ARRAY_SIZE; i++) {
 		SymbolTable->HashingTable[i] = NULL; // init hash array
 	}
 
@@ -43,12 +43,12 @@ SymTable* pop_table(SymTable* current_table) {
 	return current_table->father;
 }
 
-SymTableEntry* insert(SymTable* currentTable, char *TokenIdName){
+SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 
 	long index = HashFoldingFunction(TokenIdName);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
-	if (!(*entry))
-	{
+   
+	if (!(*entry)) {
 		*entry = (SymTableEntry*)malloc(sizeof(SymTableEntry));
 		(*entry)->name = (char*)malloc(sizeof(char) * strlen(TokenIdName));
 		strcpy((*entry)->name, TokenIdName);
@@ -59,19 +59,16 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName){
 		return *entry;
 	}
 
-	while ((*entry)->next)
-	{
-		// that for the case that the index contain more then one ID then need to check on the entire list
-		if (!strcmp(TokenIdName, (*entry)->name))
-		{	
+	while ((*entry)->next) {
+		// If the index contains 2 or more IDs (hash table collisions), go through each ID and check if that's the ID we want to insert 
+		if (!strcmp(TokenIdName, (*entry)->name)) {	
 			return NULL;
 		}
 		
 		*entry = (*entry)->next;
 	}
 
-	if (!strcmp(TokenIdName, (*entry)->name))
-	{
+	if (!strcmp(TokenIdName, (*entry)->name)) {
 		return NULL;
 	}
 
@@ -85,11 +82,10 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName){
 	return (*entry);
 }
 
-SymTableEntry* lookup(SymTable* current_table, char* id_name){
+SymTableEntry* lookup(SymTable* current_table, char* id_name) {
 	long index = HashFoldingFunction(id_name);
 	SymTableEntry *entry = current_table->HashingTable[index];
-	while (entry)
-	{
+	while (entry) {
 		if (!strcmp(id_name, entry->name)) {
 			return entry;
 		}
@@ -98,11 +94,10 @@ SymTableEntry* lookup(SymTable* current_table, char* id_name){
 	return NULL;
 }
 
-SymTableEntry* find(SymTable* current_table, char* id_name){
+SymTableEntry* find(SymTable* current_table, char* id_name) {
 	SymTableEntry *entry;
-	while (current_table)
-	{
-		if (entry = lookup(current_table, id_name)) {
+	while (current_table) {
+		if ((entry = lookup(current_table, id_name))) {
 			return entry;
         } else {
             // not present in this table. Check father's table.
@@ -113,7 +108,7 @@ SymTableEntry* find(SymTable* current_table, char* id_name){
     return NULL;
 }
 
-void set_id_type(SymTableEntry currentEntry, elm_type id_type){
+void set_id_type(SymTableEntry currentEntry, elm_type id_type) {
 	if ((&currentEntry) == NULL) {
         return;
     }
@@ -121,7 +116,7 @@ void set_id_type(SymTableEntry currentEntry, elm_type id_type){
     (&currentEntry) -> type = id_type;
 }
 
-elm_type get_id_type(SymTableEntry currentEntry){
+elm_type get_id_type(SymTableEntry currentEntry) {
 	return (&currentEntry)->type;
 }
 
@@ -140,12 +135,9 @@ void setLineNumber(SymTableEntry* current_entry, int lineNumber){
 
 void printErrors(int lineNumber){
 	int i;
-	if (cur_entry)
-	{
-		for (i = 0; i < ERROR_TYPES; i++)
-		{
-			switch (cur_entry->errorsExpressions[i].error)
-			{
+	if (cur_entry) {
+		for (i = 0; i < ERROR_TYPES; i++) {
+			switch (cur_entry->errorsExpressions[i].error) {
 			case REAL_TO_INTEGER:
 				fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: Can't convert [%s] real to integer\n", "C007",
 					cur_entry->errorsExpressions[i].lineNumber, cur_entry->errorsExpressions[i].variableName);
