@@ -43,26 +43,26 @@ SymTable* pop_table(SymTable* current_table) {
 	return current_table->father;
 }
 
-// TODO: still need to fix the insert method. Waitting for Mark's email back
-SymTableEntry insert(SymTable* current_table, char* id_name) {
-	long index = HashFoldingFunction(id_name);
-	SymTableEntry **entry = &(current_table->HashingTable[index]);
+SymTableEntry* insert(SymTable* currentTable, char *TokenIdName){
+
+	long index = HashFoldingFunction(TokenIdName);
+	SymTableEntry **entry = &(currentTable->HashingTable[index]);
 	if (!(*entry))
 	{
-		*entry = (SymTableEntry*) malloc(sizeof(SymTableEntry));
-		(*entry)->name = (char*) malloc(sizeof(char) * strlen(id_name));
-		strcpy((*entry)->name, id_name);
-        (*entry) -> type = var_type
+		*entry = (SymTableEntry*)malloc(sizeof(SymTableEntry));
+		(*entry)->name = (char*)malloc(sizeof(char) * strlen(TokenIdName));
+		strcpy((*entry)->name, TokenIdName);
 		(*entry)->next = NULL;
+		(*entry)->instances = 0;
 		(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 		(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
-		return **entry;
+		return *entry;
 	}
 
 	while ((*entry)->next)
 	{
 		// that for the case that the index contain more then one ID then need to check on the entire list
-		if (!strcmp(id_name, (*entry)->name))
+		if (!strcmp(TokenIdName, (*entry)->name))
 		{	
 			return NULL;
 		}
@@ -70,51 +70,51 @@ SymTableEntry insert(SymTable* current_table, char* id_name) {
 		*entry = (*entry)->next;
 	}
 
-	if (!strcmp(id_name, (*entry)->name))
+	if (!strcmp(TokenIdName, (*entry)->name))
 	{
 		return NULL;
 	}
 
 	(*entry) = (SymTableEntry*)malloc(sizeof(SymTableEntry));
-	(*entry)->name = (char*)malloc(sizeof(char)*strlen(id_name));
-	strcpy((*entry)->name, id_name);
+	(*entry)->name = (char*)malloc(sizeof(char)*strlen(TokenIdName));
+	strcpy((*entry)->name, TokenIdName);
 	(*entry)->next = NULL;
 	(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 	(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
-	(*entry)->numInstances = 0;
+	(*entry)->instances = 0;
 	return (*entry);
 }
 
-SymTableEntry lookup(SymTable* current_table, char* id_name){
+SymTableEntry* lookup(SymTable* current_table, char* id_name){
 	long index = HashFoldingFunction(id_name);
 	SymTableEntry *entry = current_table->HashingTable[index];
 	while (entry)
 	{
 		if (!strcmp(id_name, entry->name)) {
-			return *entry;
+			return entry;
 		}
 		entry = entry->next;
 	}
 	return NULL;
 }
 
-SymTableEntry find(SymTable* current_table, char* id_name){
+SymTableEntry* find(SymTable* current_table, char* id_name){
 	SymTableEntry *entry;
 	while (current_table)
 	{
-		if ((*entry = lookup(current_table, id_name))) {
-			return *entry;
+		if (entry = lookup(current_table, id_name)) {
+			return entry;
         } else {
             // not present in this table. Check father's table.
 			current_table = pop_table(current_table);
         }
 	}
 
-	return NULL;
+    return NULL;
 }
 
 void set_id_type(SymTableEntry currentEntry, elm_type id_type){
-	if (currentEntry == NULL) {
+	if ((&currentEntry) == NULL) {
         return;
     }
 

@@ -12,6 +12,8 @@
 #define TYPE_INTEGER 2
 #define TYPE_ARRAY 3
 
+#define ERROR_TYPES 6
+
 #define HASH_ARRAY_SIZE 255
 
 typedef enum elm_type { TYPE_NULL, integer, real } elm_type;
@@ -75,9 +77,9 @@ SymTableEntry *cur_entry;
 
 SymTable* make_table(SymTable* current_ptr);
 SymTable* pop_table(SymTable* current_tab);
-SymTableEntry insert(SymTable* current_ptr, char *name);
-SymTableEntry lookup(SymTable* current_ptr, char *name);
-SymTableEntry find(SymTable* current_ptr, char *name);
+SymTableEntry* insert(SymTable* current_ptr, char *name);
+SymTableEntry* lookup(SymTable* current_ptr, char *name);
+SymTableEntry* find(SymTable* current_ptr, char *name);
 
 void set_type(SymTableEntry* entry, int type);
 int get_type(SymTableEntry*);

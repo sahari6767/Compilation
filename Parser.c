@@ -37,6 +37,7 @@ void parse_PROGRAM()
 void parse_BLOCK()
 {
 	currentToken = next_token();
+    SymTable *cur_table;
 	switch(currentToken->kind)
 	{
 		case TOKEN_BLOCK:
@@ -130,7 +131,6 @@ void parse_DECLARATION()
 
 void parse_VAR_DECLARATION()
 {
-	//int type; /// We added for the derivation //// Sahar putted on comment
 	currentToken = next_token();
 	switch (currentToken->kind)
 	{
@@ -140,8 +140,6 @@ void parse_VAR_DECLARATION()
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION -> id : VAR_DECLARATION_NEW)\n");
 			match(TOKEN_COLON);
-			/*type = parse_SIMPLE_TYPE(); /// checking what type // //// Sahar putted on comment
-			parse_VAR_DECLARATION_NEW(type);*/ /// the func gets 'type' //// Sahar putted on comment
 			parse_VAR_DECLARATION_NEW(var_name);
 			break;
 		}
@@ -163,7 +161,7 @@ char *copy_lexeme(char *string_to_copy) {
 void parse_VAR_DECLARATION_NEW(char *var_name)
 {
 	currentToken = next_token();
-    SymTableEntry entry;
+    SymTableEntry *entry;
 	switch (currentToken->kind)
 	{
 		case TOKEN_INTEGER:
@@ -186,8 +184,6 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 		case TOKEN_ARRAY:
 		{
 		    entry = insert(cur_table, var_name);
-            // todo: is needed? if so, where can we get the size? set_size(entry, )
-			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> array [SIZE] of SIMPLE_TYPE)\n"); 
 			match(TOKEN_LEFT_BRACKETS);
 			parse_SIZE();
 			match(TOKEN_RIGHT_BRACKETS);
@@ -1073,7 +1069,6 @@ void recoveryFromError(Grammer i_Variable)
 	back_token();
 }
 
-/// We added thate bsed on Ron
 void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
 {
 	int i = 0;
@@ -1084,8 +1079,7 @@ void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
 		{
 			if (entry->instances == 0)
 			{
-				///we are not sure how the output should look like
-				fprintf(yyoutSem, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
+				fprintf(yyoutSyn, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
 					entry->defineInLineNumber, entry->name);
 			}
 
