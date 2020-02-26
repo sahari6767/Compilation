@@ -6,7 +6,7 @@
 #include "Tokens.h"
 #include "Parser.h"
 #include "SymbolTable.h"
-FILE *yyoutLex, *yyoutSyn;
+FILE *yyoutLex, *yyoutSyn,*yyoutSem;
 void error(char*,int);
 int line=1;
 %}
@@ -115,8 +115,8 @@ int main()
 	char* pathToExportResultFileTestLex2 =  "C:\\temp\\test2_313173213_204159784_204367387_lex.txt";
 	char* pathToExportResultFileTestSyn1 =  "C:\\temp\\test1_313173213_204159784_204367387_syntactic.txt";
 	char* pathToExportResultFileTestSyn2 =  "C:\\temp\\test2_313173213_204159784_204367387_syntactic.txt";
-	char* pathToExportResultFileTestSyn1 =  "C:\\temp\\test1_313173213_204159784_204367387_semantic.txt";
-	char* pathToExportResultFileTestSyn2 =  "C:\\temp\\test2_313173213_204159784_204367387_semantic.txt";
+	char* pathToExportResultFileTestSem1 =  "C:\\temp\\test1_313173213_204159784_204367387_semantic.txt";
+	char* pathToExportResultFileTestSem2 =  "C:\\temp\\test2_313173213_204159784_204367387_semantic.txt";
 	eTOKENS kind;
 	line = 1;
 	
