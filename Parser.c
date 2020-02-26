@@ -217,7 +217,7 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 			match(TOKEN_RIGHT_BRACKETS);
 			match(TOKEN_OF);
 			int type = parse_SIMPLE_TYPE();
-            set_type(cur_entry, type);
+            set_type(entry, type);
 			break;
 		}
 	
