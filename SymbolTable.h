@@ -80,8 +80,8 @@ SymTableEntry* insert(SymTable* current_ptr, char *name);
 SymTableEntry* lookup(SymTable* current_ptr, char *name);
 SymTableEntry* find(SymTable* current_ptr, char *name);
 
-void set_type(SymTableEntry* entry, int type);
-int get_type(SymTableEntry*);
+void set_type(SymTableEntry* entry, elm_type type);
+elm_type get_type(SymTableEntry*);
 
 long HashFoldingFunction(char *name);
 
