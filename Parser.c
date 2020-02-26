@@ -171,9 +171,9 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
 				    currentToken->lineNumber, currentToken->lexeme);
 		    } else {
-                	set_type(cur_entry, TYPE_INTEGER);
-					set_roleType(cur_entry, ROLE_VAR);
-					setLineNumber(cur_entry, currentToken->lineNumber);
+                	set_type(entry, TYPE_INTEGER);
+					set_roleType(entry, ROLE_VAR);
+					setLineNumber(entry, currentToken->lineNumber);
             }
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
@@ -189,9 +189,9 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
 				    currentToken->lineNumber, currentToken->lexeme);
 		    } else {
-                	set_type(cur_entry, TYPE_REAL);
-					set_roleType(cur_entry, ROLE_VAR);
-					setLineNumber(cur_entry, currentToken->lineNumber);
+                	set_type(entry, TYPE_REAL);
+					set_roleType(entry, ROLE_VAR);
+					setLineNumber(entry, currentToken->lineNumber);
             }
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
@@ -207,8 +207,8 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
 				    currentToken->lineNumber, currentToken->lexeme);
 		    } else {
-					set_roleType(cur_entry, TYPE_ARRAY);
-					setLineNumber(cur_entry, currentToken->lineNumber);
+					set_roleType(entry, TYPE_ARRAY);
+					setLineNumber(entry, currentToken->lineNumber);
             }
 
             // todo: print syntax rule (example: 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); )
