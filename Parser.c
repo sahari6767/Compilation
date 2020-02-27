@@ -152,6 +152,8 @@ void parse_VAR_DECLARATION()
 }
 
 char *copy_lexeme(char *string_to_copy) {
+    if (string_to_copy == NULL)
+        return NULL;
 	int var_name_len = strlen(string_to_copy);
 	char* var_name = (char *) malloc(sizeof(char) * var_name_len);
 	strcpy_s(var_name, var_name_len, string_to_copy);
