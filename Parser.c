@@ -136,6 +136,7 @@ void parse_VAR_DECLARATION()
 	{
 		case TOKEN_ID:
 		{
+			fprintf(yyoutSyn,"we are here\n");
 			char *var_name = copy_lexeme(currentToken -> lexeme);
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION -> id : VAR_DECLARATION_NEW)\n");
@@ -155,8 +156,8 @@ char *copy_lexeme(char *string_to_copy) {
     if (string_to_copy == NULL)
         return NULL;
 	int var_name_len = strlen(string_to_copy);
-	char* var_name = (char *) malloc(sizeof(char) * var_name_len);
-	strcpy_s(var_name, var_name_len, string_to_copy);
+	char* var_name = (char *) malloc(sizeof(char) * (var_name_len-1));
+	strcpy(var_name, string_to_copy);
 	return var_name;
 }
 

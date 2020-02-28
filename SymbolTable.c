@@ -51,7 +51,7 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 	long index = HashFoldingFunction(TokenIdName);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
    
-	if (!(*entry)) {
+	if (entry==NULL) {
 		*entry = (SymTableEntry*)malloc(sizeof(SymTableEntry));
 		(*entry)->name = (char*)malloc(sizeof(char) * strlen(TokenIdName));
 		strcpy((*entry)->name, TokenIdName);
@@ -61,7 +61,8 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 		(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
 		return *entry;
 	}
-
+	if ((*entry) == NULL)
+		return NULL;
 	while ((*entry)->next) {
 		// If the index contains 2 or more IDs (hash table collisions), go through each ID and check if that's the ID we want to insert 
 		if (!strcmp(TokenIdName, (*entry)->name)) {	
