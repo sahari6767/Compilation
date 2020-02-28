@@ -153,6 +153,12 @@ int main()
 		fclose (yyoutSyn);
 	}
 
+	if(yyoutSem)
+	{
+		fclose (yyoutSem);
+	}
+
+
 	freeMemoryTokens(); /* Release memory allocation */
 	line = 1; /* Reset the line number counter for the second file test  */
 	isFirstToken = 1;
