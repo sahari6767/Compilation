@@ -45,6 +45,9 @@ SymTable* pop_table(SymTable* current_table) {
 
 SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 
+    if (TokenIdName == NULL)
+        return NULL;
+
 	long index = HashFoldingFunction(TokenIdName);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
    
