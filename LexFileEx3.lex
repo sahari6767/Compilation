@@ -120,7 +120,7 @@ int main()
 	eTOKENS kind;
 	line = 1;
 	
-	printf("File Test1:\n");
+	printf("File test1:\n");
 	yyin = fopen(pathToFileTest1 ,"r");
 	if(!yyin)
 	{

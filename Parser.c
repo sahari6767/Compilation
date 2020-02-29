@@ -37,7 +37,6 @@ void parse_PROGRAM()
 void parse_BLOCK()
 {
 	currentToken = next_token();
-    SymTable *cur_table;
 	switch(currentToken->kind)
 	{
 		case TOKEN_BLOCK:
@@ -136,7 +135,6 @@ void parse_VAR_DECLARATION()
 	{
 		case TOKEN_ID:
 		{
-			fprintf(yyoutSyn,"we are here\n");
 			char *var_name = copy_lexeme(currentToken -> lexeme);
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION -> id : VAR_DECLARATION_NEW)\n");
@@ -152,7 +150,7 @@ void parse_VAR_DECLARATION()
 	}
 }
 
-char *copy_lexeme(char *string_to_copy) {
+ char *copy_lexeme(char *string_to_copy) {
     if (string_to_copy == NULL)
         return NULL;
 	int var_name_len = strlen(string_to_copy);
@@ -164,19 +162,18 @@ char *copy_lexeme(char *string_to_copy) {
 void parse_VAR_DECLARATION_NEW(char *var_name)
 {
 	currentToken = next_token();
-    SymTableEntry *entry;
 	switch (currentToken->kind)
 	{
 		case TOKEN_INTEGER:
 		{
-		    entry = insert(cur_table, var_name);
-		    if (entry == NULL) {
+		    cur_entry = insert(cur_table, var_name);
+		    if (cur_entry == NULL) {
 			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
 				    currentToken->lineNumber, currentToken->lexeme);
 		    } else {
-                	set_type(entry, TYPE_INTEGER);
-					set_roleType(entry, ROLE_VAR);
-					setLineNumber(entry, currentToken->lineNumber);
+                	set_type(cur_entry, TYPE_INTEGER);
+					set_roleType(cur_entry, ROLE_VAR);
+					setLineNumber(cur_entry, currentToken->lineNumber);
             }
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
@@ -187,14 +184,14 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_REAL:
 		{
-		    entry = insert(cur_table, var_name);
-		    if (entry == NULL) {
+			cur_entry = insert(cur_table, var_name);
+		    if (cur_entry == NULL) {
 			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
 				    currentToken->lineNumber, currentToken->lexeme);
 		    } else {
-                	set_type(entry, TYPE_REAL);
-					set_roleType(entry, ROLE_VAR);
-					setLineNumber(entry, currentToken->lineNumber);
+                	set_type(cur_entry, TYPE_REAL);
+					set_roleType(cur_entry, ROLE_VAR);
+					setLineNumber(cur_entry, currentToken->lineNumber);
             }
 
 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); 
@@ -205,13 +202,13 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 	
 		case TOKEN_ARRAY:
 		{
-		    entry = insert(cur_table, var_name);
-		    if (entry == NULL) {
+			cur_entry = insert(cur_table, var_name);
+		    if (cur_entry == NULL) {
 			    fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable %s already defined\n", "C001",
 				    currentToken->lineNumber, currentToken->lexeme);
 		    } else {
-					set_roleType(entry, TYPE_ARRAY);
-					setLineNumber(entry, currentToken->lineNumber);
+					set_roleType(cur_entry, TYPE_ARRAY);
+					setLineNumber(cur_entry, currentToken->lineNumber);
             }
 
             // todo: print syntax rule (example: 			fprintf(yyoutSyn, "Rule (VAR_DECLARATION_NEW -> SIMPLE_TYPE)\n"); )
@@ -220,7 +217,7 @@ void parse_VAR_DECLARATION_NEW(char *var_name)
 			match(TOKEN_RIGHT_BRACKETS);
 			match(TOKEN_OF);
 			int type = parse_SIMPLE_TYPE();
-            set_type(entry, type);
+            set_type(cur_entry, type);
 			break;
 		}
 	
@@ -1063,16 +1060,16 @@ void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
 	int i = 0;
 	for (i = 0; i < HASH_ARRAY_SIZE; i++)
 	{
-		SymTableEntry *entry = current_ptr->HashingTable[i];
-		while (entry)
+		SymTableEntry *cur_entry = current_ptr->HashingTable[i];
+		while (cur_entry)
 		{
-			if (entry->instances == 0)
+			if (cur_entry->instances == 0)
 			{
 				fprintf(yyoutSyn, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
-					entry->defineInLineNumber, entry->name);
+					cur_entry->defineInLineNumber, cur_entry->name);
 			}
 
-			entry = entry->next;
+			cur_entry = cur_entry->next;
 		}
 	}
 }

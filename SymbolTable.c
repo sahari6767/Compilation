@@ -40,7 +40,7 @@ SymTable* make_table(SymTable* current_table) {
 }
 
 SymTable* pop_table(SymTable* current_table) {
-	return current_table->father;
+	return current_table-> father;
 }
 
 SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
@@ -51,7 +51,8 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 	long index = HashFoldingFunction(TokenIdName);
 	SymTableEntry **entry = &(currentTable->HashingTable[index]);
    
-	if (entry==NULL) {
+	if (!(*entry)) 
+	{
 		*entry = (SymTableEntry*)malloc(sizeof(SymTableEntry));
 		(*entry)->name = (char*)malloc(sizeof(char) * strlen(TokenIdName));
 		strcpy((*entry)->name, TokenIdName);
@@ -61,8 +62,7 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 		(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
 		return *entry;
 	}
-	if ((*entry) == NULL)
-		return NULL;
+	
 	while ((*entry)->next) {
 		// If the index contains 2 or more IDs (hash table collisions), go through each ID and check if that's the ID we want to insert 
 		if (!strcmp(TokenIdName, (*entry)->name)) {	
@@ -75,7 +75,7 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 	if (!strcmp(TokenIdName, (*entry)->name)) {
 		return NULL;
 	}
-
+	/*
 	(*entry) = (SymTableEntry*)malloc(sizeof(SymTableEntry));
 	(*entry)->name = (char*)malloc(sizeof(char)*strlen(TokenIdName));
 	strcpy((*entry)->name, TokenIdName);
@@ -83,7 +83,7 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 	(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 	(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
 	(*entry)->instances = 0;
-	return (*entry);
+	return (*entry);*/
 }
 
 SymTableEntry* lookup(SymTable* current_table, char* id_name) {
