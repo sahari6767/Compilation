@@ -112,7 +112,7 @@ SymTableEntry* find(SymTable* current_table, char* id_name) {
     return NULL;
 }
 
-void set_type(SymTableEntry *currentEntry, elm_type id_type) {
+void set_type(SymTableEntry* currentEntry, elm_type id_type) {
 	if (currentEntry == NULL) {
         return;
     }
@@ -120,7 +120,7 @@ void set_type(SymTableEntry *currentEntry, elm_type id_type) {
     currentEntry -> type = id_type;
 }
 
-elm_type get_type(SymTableEntry *currentEntry) {
+elm_type get_type(SymTableEntry* currentEntry) {
 	return currentEntry->type;
 }
 
@@ -128,7 +128,7 @@ void set_size(SymTableEntry *entry, int size) {
     entry -> size = size;
 }
 
-void set_roleType(SymTableEntry *entry, int roleType) {
+void set_roleType(SymTableEntry* entry, int roleType) {
     entry -> roleType = roleType;
 }
 

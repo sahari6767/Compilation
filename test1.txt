@@ -1,0 +1,105 @@
+$$ A test for part3 of the project.
+$$ Supposed to be syntactically correct.
+$$ For any syntactic error, please alert us.
+
+block
+	x : integer;
+	y : real;
+	
+	int_value : integer;
+	real_value : real;
+	int_array : array [10] of integer;
+	real_array : array [10] of real;	
+		
+	type _color is enum { black, white, red, blue, green, orange };
+	type _point is struct { a : integer; b : integer; point_color : _color };
+	type _week is enum { sunday, monday, tuesday, wednesday, thursday, friday, saturday };
+	
+	duplicated_value : integer;
+	duplicated_value : integer;   										$$ duplicate variable declaration
+	
+	type _duplicated_enum is enum {param1, param2};
+	type _duplicated_enum is enum {param3, param4};								$$ duplicate type declaration
+
+	type _duplicated_struct is struct {dup1 : integer; dup2 : real};
+	type _duplicated_struct is struct {dup3 : integer; dup4 : real};					$$ duplicate type declaration						
+	type _valid_struct is struct {value_int : integer; value_real : real};	
+	week_day : _week;
+	myValid : _valid_struct;
+	myValid2 : _valid_struct;
+	myColor : _color;
+	myUndeclaredValue : _undeclared_type;
+	myPoint : _point
+	$$ There is ';' between statements only, last statement without ';'
+begin
+	undeclared_value = 3;																	$$ undeclared_value is not defined
+	week_day = invaliday;																	$$ invaliday is not defined
+	
+	int_value = black;																		$$ black is not defined (is value of an enum type, but the left side is of integer type)
+	int_value = int_array;																	$$ type inconsistency between the left side and the right side
+	int_array = week_day; 																	$$ type inconsistency between the left side and the right side
+	int_value = myPoint.point_color;														$$ type inconsistency between the left side and the right side
+	
+	myColor = green;
+	myColor = white + red;																	$$ ERROR, can't do operation on enum type
+	myValid = myValid2;																		$$ ERROR, Assignment is forbidden to struct type
+	
+	x = 5;
+	y = 2.3;
+	myPoint.a = 3; 
+	myPoint.b = 5.4; 																		$$ type inconsistency between the left side and the right side
+	myPoint.point_color = red;
+	
+	x = 5 + myValid.value_int;
+	x = 2.4 + myValid.value_int;					$$ ERROR in expression in the right side : mixed types
+	x = 3 + 5 + 5.2;																		$$ ERROR in expression in the right side : mixed types
+	x = myValid.value_real + 200;					$$ ERROR in expression in the right side : mixed types	
+	
+	int_array[1] = y;																		$$ type of left side differs from type of the right side
+	int_array[2] = 8;
+	int_array[4] = 13.5;						$$ type of left side differs from type of the right side
+	int_array[5] = 13 + 2.3;					$$ ERROR in expression in the right side : mixed types
+	int_array[6] = 13 + y;						$$ ERROR in expression in the right side : mixed types
+	int_array[y] = 34;
+	int_array[4 + y] = 23;						$$ ERROR in index expression : mixed types (and hence this expression is not of type integer)
+	int_array[y] = 34;																		$$ ERROR in index expression, this expression is not of type integer
+	int_array[4 + orange] = 23;					$$ orange is not defined
+	int_array[x + arr[4]] = x + arr[4];
+	y[int_value] = 2020;						$$ y is not defined as array
+
+	x = undeclared_value;						$$ undeclared_value is not defined
+	x = int_value + undeclared_value;				$$ undeclared_value is not defined
+	
+	myValid.unknownKey = 5;						$$ ERROR unknownKey is not a part of _valid_struct
+	myValid.value_int = red;					$$ red is not of type int
+
+	switch(x)	
+	{
+		case 1:			{x = 9; block pi : real begin pi = 3.14 end; break}
+		case 2:			{x = 8;	break};
+		default: 		x = 0; break
+	};
+
+	switch(week_day)	
+	{
+		case red:		{x = 9; block pi : real begin pi = 3.14 end; break}	$$ red is not a value of type _week (the type of key in the switch)
+		case sunday:	{x = 8;	break};
+		default: 		x = 0; break
+	};
+
+	switch(y)																				$$ key inSWITCH can not be of type real
+	{
+		case 1:			{x = 9; block pi : real begin pi = 3.14 end; break}
+		case 2:			{x = 8;	break};
+		default: 		x = 0; break
+	};
+
+	block
+		z : integer;
+		zeroPoint : _point
+	begin
+		zeroPoint.a = 0;
+		zeroPoint.b = 0.3;																	$$ type inconsistency between the left side and the right side						
+		break
+	end
+end

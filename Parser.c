@@ -545,7 +545,8 @@ void parse_VAR_ELEMENT()
 	switch (currentToken->kind) {
 		case TOKEN_ID: {
             // Check the ID was already declared before assignment
-            if (find(cur_table, currentToken -> lexeme) == NULL) {
+            if (find(cur_table, currentToken -> lexeme) == NULL) 
+			{
                 fprintf(yyoutSem, "Error   #%s \t Line number:%3d\t Description: The variable '%s' isn't defined\n", "C004",
 				currentToken->lineNumber, currentToken->lexeme);
             }
@@ -555,16 +556,21 @@ void parse_VAR_ELEMENT()
 			{
 			    fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> VAR_ELEMENT_NEW)\n");
 			    parse_VAR_ELEMENT_NEW();
-			} else if(secondToken->kind == TOKEN_KEYWORD_END || secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE) {
+			} 
+			else if(secondToken->kind == TOKEN_KEYWORD_END || secondToken->kind == TOKEN_RIGHT_PARENTHESES || secondToken->kind == TOKEN_RIGHT_BRACKETS || secondToken->kind == TOKEN_SEMICOLON || secondToken->kind == TOKEN_ASSIGNMENT || secondToken->kind == TOKEN_AR_OP_ADD || secondToken->kind == TOKEN_AR_OP_SUB || secondToken->kind == TOKEN_AR_OP_MULTI || secondToken->kind == TOKEN_AR_OP_DIVIDE) 
+			{
 			    fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> epsilon)\n");
 			    parse_VAR_ELEMENT_NEW();
-			} else {
+			} 
+			else 
+			{
 			    fprintf(yyoutSyn, "Rule (VAR_ELEMENT -> FIELD_ACCESS)\n");
 			    back_token();
 			    parse_FIELD_ACCESS();
 			}
 		break;
-		} default: {
+		} 
+		default: {
 			fprintf(yyoutSyn, "Expected: one of tokens [TOKEN_ID] at line %d, Actual token: %s, lexeme %s\n", currentToken->lineNumber, convertFromTokenKindToString(currentToken->kind), currentToken->lexeme);
 			recoveryFromError(VAR_ELEMENT);
 		}
@@ -590,6 +596,14 @@ void parse_VAR_ELEMENT_NEW()
 			fprintf(yyoutSyn, "Rule (VAR_ELEMENT_NEW  -> epsilon(=))\n");
 			back_token();
 			break;
+		}
+
+		case TOKEN_RIGHT_PARENTHESES:
+		{
+			fprintf(yyoutSyn, "Rule (VAR_ELEMENT_NEW  -> epsilon(')'))\n");
+			back_token();
+			break;
+
 		}
 
 		case TOKEN_RIGHT_BRACKETS:
