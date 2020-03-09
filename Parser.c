@@ -8,7 +8,7 @@ extern FILE *yyoutLex, *yyoutSyn, *yyoutSem;
 extern Node* currentNode;
 extern Node* headNode;
 Token *currentToken;
-SymTable *currentTable;
+SymTable * cur_table;
 
 void match(eTOKENS i_ExpectedTokenKind)
 {
@@ -1074,16 +1074,23 @@ void PrintAllVariableThatNeverUsed(SymTable* current_ptr)
 	int i = 0;
 	for (i = 0; i < HASH_ARRAY_SIZE; i++)
 	{
-		SymTableEntry *cur_entry = current_ptr->HashingTable[i];
+		if (current_ptr == NULL)
+		{
+			return;
+		}
+		else
+		{
+		SymTableEntry *cur_entry = current_ptr -> HashingTable[i];
 		while (cur_entry)
 		{
 			if (cur_entry->instances == 0)
 			{
-				fprintf(yyoutSyn, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
+				fprintf(yyoutSem, "Warning #%s \t Line number:%3d\t Description: The variable '%s' has never been used\n", "W001",
 					cur_entry->defineInLineNumber, cur_entry->name);
 			}
 
 			cur_entry = cur_entry->next;
+		}
 		}
 	}
 }

@@ -43,14 +43,14 @@ void recoveryFromError(Grammer i_Variable);
 void mainParser();
 void parse_PROGRAM();
 void parse_BLOCK();
-void PrintAllVariableThatNeverUsed(SymTable* current_ptr); /// We added thate bsed on Ron
+void PrintAllVariableThatNeverUsed(SymTable* current_ptr); 
 void parse_DECLARATIONS();
 void parse_DECLARATIONS_NEW();
 void parse_DECLARATION();
 void parse_VAR_DECLARATION();
-void parse_VAR_DECLARATION_NEW(char* type); /// the func gets type
+void parse_VAR_DECLARATION_NEW(char* type); 
 void parse_SIZE();
-int parse_SIMPLE_TYPE(); /// We changed to int
+int parse_SIMPLE_TYPE(); 
 void parse_TYPE_DECLARATION();
 void parse_TYPE_INDICATOR();
 void parse_ENUM_TYPE();

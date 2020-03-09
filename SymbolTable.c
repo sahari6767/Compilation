@@ -40,10 +40,15 @@ SymTable* make_table(SymTable* current_table) {
 }
 
 SymTable* pop_table(SymTable* current_table) {
-	return current_table-> father;
+	if (current_table == NULL){
+		return;
+	}
+	else {
+	return current_table->father;
+	}
 }
 
-SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
+SymTableEntry* insert(SymTable* currentTable, char* TokenIdName) {
 
     if (TokenIdName == NULL)
         return NULL;
@@ -75,7 +80,7 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 	if (!strcmp(TokenIdName, (*entry)->name)) {
 		return NULL;
 	}
-	/*
+	
 	(*entry) = (SymTableEntry*)malloc(sizeof(SymTableEntry));
 	(*entry)->name = (char*)malloc(sizeof(char)*strlen(TokenIdName));
 	strcpy((*entry)->name, TokenIdName);
@@ -83,7 +88,7 @@ SymTableEntry* insert(SymTable* currentTable, char *TokenIdName) {
 	(*entry)->errorsExpressions[RIGHT_VARIABLE_UNDEFINED].variableName = "";
 	(*entry)->errorsExpressions[REAL_TO_INTEGER].variableName = "";
 	(*entry)->instances = 0;
-	return (*entry);*/
+	return (*entry);
 }
 
 SymTableEntry* lookup(SymTable* current_table, char* id_name) {
@@ -143,7 +148,6 @@ void setLineNumber(SymTableEntry* current_entry, int lineNumber){
 		current_entry->defineInLineNumber = lineNumber;
     }
 }
-
 
 void printErrors(int lineNumber){
 	int i;
